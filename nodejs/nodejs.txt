@@ -1,0 +1,24 @@
+NODE JS 
+programming language X
+technology X
+framework X 
+library X
+javascript run time envi8ronment v
+backend with js X
+ there are no functionalities in js with which the backend is built 
+ ryan dahl : found a way in which backend can be built with the help of js through node js 
+ google chrome ka v8 engine  so js is a runtime environment , which converts the code written in js by acting as a wrapper around the chrome ka v8 engine and effficiently converting it into c++ understood by the  chrome 
+ npm init -y :: no questions asked  --> package.json 
+node js contains some important modules : 
+ dependencies are packages that we install into our laptop 
+npm i package_name 
+npm uninstall package_name
+when we download a dependeny , the packages that the downloaded package depends upon also gets downloaded 
+dev dependencies are those that are required only for the development purposes
+npm i package_name --save-dev // for dev dependencies , we can also install them normlly , but ya 
+
+
+
+    
+ 
+ 

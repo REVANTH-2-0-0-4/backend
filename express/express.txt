@@ -1,0 +1,21 @@
+express is a npm package and is a framework(it gives a flow )
+express js  take cares of everything from recieving the request and sending the response 
+what is a  middleware ? 
+does something when something is sent from the server to the route ? 
+cookies and server  
+app.use(express.json());
+app.use(express.urlencoded({extended : true}));
+the above two middlewares are used to   parse the incoming json and url encoded data in req.body 
+// GLOBAL middleware
+app.use((req, res, next) => {
+    console.log(`${req.method} request for ${req.url}`);
+    next(); // Passes control to the next middleware or route
+});
+
+// for a specific route
+app.use('/admin', (req, res, next) => {
+    console.log('Admin section accessed');
+    next();
+});
+
+
