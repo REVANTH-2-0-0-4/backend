@@ -11,15 +11,19 @@
       class="main w-full min-h-screen bg-zinc-900 p-10 text-white text-lg font-['serif']"
     >
       <a href="/" class="bg-blue-800 p-2 rounded-lg">Return to home</a>
-      <div class="content mt-[10vh] ">
-         <div class="filename text-center ">
-          <span class="bg-zinc-600 rounded-lg p-[0.5vw]"><%= filename %></span>
-         </div>
-         <div class="body bg-zinc-600 rounded-lg p-[0.5vw] mt-[7vh]">
-             <%= data %>
-         </div>
-
-      </div>
+      <div class="bg-zinc-600 outline-none w-full rounded-lg p-2 mt-2"> <%= filename %> </div>
+      <form action="/edit/<%= filename %>" method="POST">
+        <textarea
+          class="block mt-2 bg-zinc-600 outline-none w-full resize-none py-2 px-4 rounded-lg tracking-tighter"
+          placeholder="The description of the task goes here"
+          name="description"
+        ></textarea>
+        <div
+          class="buttons mt-2 text-white bg-blue-800 p-2 rounded-lg text-sm w-[6.5vw] text-center"
+        >
+          <button type="submit" class="mr-2">EDIT FILE</button>
+        </div>
+      </form>
     </div>
   </body>
 </html>
