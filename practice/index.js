@@ -11,14 +11,17 @@ app.get('/', (req, res) => {
         res.render("index", { files: files });
     })
 })
-app.get('/edit/:filename', (req, res)=>{
-    fs.writeFile(`./files/${req.params.filename}`,`${req.body.description}`,(err)=>{
-        if(err) console.log(err);
-        else{
-            res.redirect("/");
+app.get('/edit/:filename', (req, res) => {
+    res.render("edit",{filename : req.params.filename});
+})
+app.post('/editt/:filename', (req, res) => {
+    fs.writeFile(`./files/${req.params.filename}`, `${req.body.description}`, (err) => {
+        if (err) console.log(err);
+        else {
+            res.redirect("/")
         }
     })
-    res.render("edit",{filename :req.params.filename});
+
 })
 app.get("/show/:filename", (req, res) => {
     fs.readFile(`./files/${req.params.filename}`, "utf-8", (err, ds) => {
