@@ -23,10 +23,9 @@
             name="description"
           ></textarea>
           <div
-            class="buttons mt-2 text-white bg-blue-800 p-2 rounded-lg text-sm flex justify-between items-center w-[11vw]"
+            class="buttons mt-2 text-white bg-blue-800 p-2 rounded-lg text-sm w-[6.5vw] text-center"
           >
             <button type="submit" class="mr-2">Create File</button>
-            <a href="/edit" class="text-white">Edit File</a>
           </div>
         </form>
         <div class="cards mt-[13vh] flex gap-3">
@@ -36,9 +35,12 @@
           >
             <%= val %>
             <br />
-            <a href="/show/<%= val %>" class="text-sm text-blue-900 pl-[12vw]"
-              >Read more</a
-            >
+            <div class="links flex justify-between items-center">
+              <a href="/edit" class="text-sm text-blue-900">Edit File</a>
+              <a href="/show/<%= val %>" class="text-sm text-blue-900"
+                >Read more</a
+              >
+            </div>
           </div>
           <% }); %>
         </div>

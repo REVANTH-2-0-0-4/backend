@@ -11,8 +11,11 @@ app.get('/', (req, res) => {
         res.render("index", { files: files });
     })
 })
-app.get('/show/:filename', (req, res) => {
-    fs.readFile(`./files${req.params.filename}`, (err, ds) => {
+app.get('./edit', (req, res) => {
+    res.send("the edit file");
+})
+app.get("/show/:filename", (req, res) => {
+    fs.readFile(`./files/${req.params.filename}`, "utf-8", (err, ds) => {
         if (err) console.log(err);
         else res.render("show", { filename: req.params.filename, data: ds });
 
@@ -30,10 +33,17 @@ app.post('/submit', (req, res) => {
             res.redirect("/");
         }
     });
-
-
-
 })
+
+
+
+
+
+
+
+
+
+
 
 app.listen(3000, () => { console.log("server running with port number 3000") });
 
