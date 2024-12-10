@@ -17,10 +17,10 @@
           <% users.forEach((user) => { %>
             <div class="user w-[20vw] bg-zinc-700 p-4 mt-4 rounded-lg">
               <div
-                class="w-full h-52 rounded-lg mb-2"
-                style="background-image: url('<%= user.image_url %>'); background-size: cover; background-position: center;"
+                class="w-full h-72 rounded-lg mb-2"
+                style="background-image: url('<%= user.image_Url %>'); background-size: cover; background-position: top;"
               ></div>
-              <div class="font-medium tracking-tight"><%= user.username %></div>
+              <div class="font-medium tracking-tight"><%= user.Username %></div>
               <div class="tracking-tighter text-sm text-zinc-500">
                 <%= user.email %>
               </div>

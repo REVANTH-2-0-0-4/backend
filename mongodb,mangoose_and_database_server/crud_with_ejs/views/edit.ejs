@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="w-full h-full bg-zinc-900 p-10 text-white font-serif">
+      <div> <a href="/read" class="text-blue-500 text-2xl">Back to Home</a></div>
+      <a href="/read" class="text-zinc-500">Show All Users</a>
+      <div class="text-2xl mt-10 text-center">Edit User</div>
+      <div class="form">
+        <form action="/editt/<%= user._id %>" method="post" class=" flex flex-col items-center justify-center  w-full h-[60vh] ">
+            <input type="text" placeholder="name" name="username" value="<%= user.Username %>" class=" mt-2 outline-none bg-zinc-600 rounded-lg p-2"/>
+            <input type="text" placeholder="email" name="email"  value="<%= user.email%>" class="  mt-2 outline-none bg-zinc-600 rounded-lg p-2"/>
+          <input type="text" placeholder="image url" name="image_url" value="<%= user.image_Url %>" class=" mt-2 outline-none bg-zinc-600 rounded-lg p-2"/>
+          <input type="submit" value="Edit User" placeholder="image url"  name="image_url" class="  mt-8 outline-none bg-blue-600 rounded-lg p-2 w-[14vw]"/>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

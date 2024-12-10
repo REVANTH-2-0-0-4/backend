@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://127.0.0.1:27017/testapp');
 const UserSchema = mongoose.Schema({
-  name: String,
+  Username: String,
   email: String,
-  imageUrl: String,
-});
+  image_Url: String
+})
 
 const User = mongoose.model('user', UserSchema);
 
@@ -18,5 +18,5 @@ async function clearDatabase() {
   }
 }
 
-module.exports = { User, clearDatabase };
+module.exports = [ User, clearDatabase ];
 // console.log(module.exports);
