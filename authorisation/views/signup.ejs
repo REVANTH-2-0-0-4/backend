@@ -1,0 +1,95 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="w-full min-h-screen bg-zinc-900 text-white font-serif">
+       <div class="text-center text-2xl p-6"> Enter your credentials to Sign up</div>
+       <div >
+        <form  action="/create" method="post" class="flex flex-col gap-y-4  h-[80vh] items-center justify-center">
+            <input type ="text" class="bg-zinc-600 rounded-lg py-2 px-4 outline-none" name="name" placeholder="enter your name">
+            <input type ="email" class="bg-zinc-600 rounded-lg py-2 px-4 outline-none" name="email" placeholder="enter your email">
+            <input type ="number" class="bg-zinc-600 rounded-lg py-2 px-4 outline-none"  name="age" placeholder="enter your age">
+            <input type ="password" class="bg-zinc-600 rounded-lg py-2 px-4 outline-none"  name="password" placeholder="enter your password">
+            <input type ="submit" class="bg-blue-600 rounded-lg py-2 px-4 outline-none"  value="create account">
+
+        </form>
+       </div>
+    </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorization Test App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen flex flex-col justify-center items-center font-serif">
+  <div class="max-w-lg w-full p-6 bg-gray-800 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-6 text-center">Enter your credentials</h1>
+
+    <form action="/create" method="POST" class="space-y-4">
+      <div>
+        <label for="name" class="block text-sm font-medium">Name</label>
+        <input 
+          type="text" 
+          name="name" 
+          required 
+          class="mt-1 block w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your Name">
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          required 
+          class="mt-1 block w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your email">
+      </div>
+
+      <div>
+        <label for="age" class="block text-sm font-medium">Age</label>
+        <input 
+          type="number" 
+          name="age" 
+          required 
+          class="mt-1 block w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your Age">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium">Password</label>
+        <input 
+          type="password" 
+          name="password" 
+          required 
+          class="mt-1 block w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your password">
+      </div>
+   
+
+      <div>
+        <button 
+          type="submit" 
+          class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          Create Account
+        </button>
+      </div>
+    </form>
+
+    <div class="mt-6 border-t border-gray-700"></div>
+
+    <p class="mt-4 text-sm text-center">
+      Already have an account? 
+      <a href="/login" class="text-blue-500 hover:underline">Login  here</a>
+    </p>
+  </div>
+</body>
+</html>
