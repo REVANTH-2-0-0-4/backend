@@ -23,6 +23,7 @@ app.get('/post/create',async (req,res)=>{
     })
     const user = await userModel.findOne({_id : "675d64cf90300c42be3b4abd"});
     user.posts.push(post._id);
+    user.save();
     res.send({post,user});
     // res.redirect('/');
 })
