@@ -1,4 +1,3 @@
-
 # **Notes: Cookies, Sessions, and Tokens**
 
 ---
@@ -59,7 +58,7 @@
 - Tokens are passed to the server in requests to verify a user's identity or perform actions.
 - Can be used instead of session IDs for stateless authentication.
 
-### Key Differences between Tokens and Cookies:
+### Key Differences Between Tokens and Cookies:
 - **Storage**:  
   - Cookies are stored on the client (browser), whereas tokens are often stored in the request headers.
 - **Purpose**:  
@@ -75,18 +74,11 @@
 - **CSRF Protection**:  
   - CSRF cookies are used to store tokens that validate requests to prevent unauthorized actions.
   
-- **Preventing XSS and Session Hijacking**:
+- **Preventing XSS and Session Hijacking**:  
   - Secure cookies with HttpOnly and Secure flags help prevent XSS attacks and session hijacking.
 
 ### **Tokens for Security**:
 - Used in stateless authentication systems like OAuth or JWT for secure transmission of user information without relying on server-side storage.
-
----
-
-### Example Use Cases:
-
-- **Session**: `Set-Cookie: session_id=abc123; HttpOnly; Secure;`
-- **Token**: `Authorization: Bearer abcdef.ghijklmnopqrstuvwxyz`
 
 ---
 
@@ -134,9 +126,44 @@
 
 ---
 
+### Example Use Cases:
+
+- **Session**:
+  ```http
+  Set-Cookie: session_id=abc123; HttpOnly; Secure;
+  ```
+- **Token**:
+  ```http
+  Authorization: Bearer abcdef.ghijklmnopqrstuvwxyz
+  ```
+
 ---
 
-### Additional Resources:
+### Retrieving Data Using JWT Verify Method:
+
+```javascript
+const jwt = require('jsonwebtoken');
+function verifyToken(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).send('Access Denied: No Token Provided!');
+    }
+    try {
+        const verifiedUser = jwt.verify(token, 'secret');
+        req.user = verifiedUser;
+        next();
+    } catch (err) {
+        res.status(400).send('Invalid Token');
+    }
+}
+
+app.get('/protected', verifyToken, (req, res) => {
+    res.send(`Hello, ${req.user.email}! You are authorized.`);
+});
+```
+
+---
+
+## **Additional Resources**:
 - [Cookie and Session Basics](https://chatgpt.com/share/675ce59a-aae0-8008-94a5-f116acb456ce)
 
----
