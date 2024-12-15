@@ -8,9 +8,13 @@
   </head>
   <body>
     <div class="w-full h-screen bg-zinc-900 text-white p-10 font-serif">
+      <div class="mt-4 ml-4"> <a href="/" class="text-blue-600">Return to Home</a></div>
+
       <div class="text-center text-[2.5vw]">Enter Your Credentials to register</div>
       <div class="form">
         <form
+          action="/create"
+          method="post"
           class="flex mt-[15vh] flex-col gap-y-[2vh] items-center justify-center"
         >
           <div class="flex items-center w-full max-w-[30vw]">
@@ -63,7 +67,9 @@
               required
             />
           </div>
-            <a href="/create" class=" w-[50vw] flex items-center justify-center mt-10 "><span class="bg-blue-600 p-2 px-6 rounded-lg">Create User</span></a>
+          <div class="text-blue-600 text-center pl-[25vw] mt-4 "><a href="/login">Already have an account ? Login</a> </div>
+
+            <button type="submit" class=" w-[50vw] flex items-center justify-center mt-4  pl-[8vw]"><span class="bg-blue-600 p-2 px-6 rounded-lg">Create User</span></button>
         </form>
       </div>
     </div>

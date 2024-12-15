@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema({
             type : mongoose.Schema.Types.ObjectId,
             ref : "post"
         }
-    ]
+    ],
+    password : String
 })
-mongoose.model('user',userSchema);
+module.exports = mongoose.model('user',userSchema);

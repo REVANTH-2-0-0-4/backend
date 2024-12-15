@@ -7,10 +7,12 @@ This is a mini-project built using the MERN stack that allows users to:
 - **Like posts**  
 
 ## Features
-
-- **User Authentication:** Register and log in securely.
-- **CRUD Operations:** Create, read, update, and delete posts.
-- **Like System:** Users can like posts.  
+- 📝 Writing Posts  
+- 📸 Uploading Pictures  
+- 🔒 Authentication and Authorization  
+- ❤️ Liking Pictures  
+- ✏️ Editing Posts  
+- 🗑️ Deleting Posts  
 
 ## Tech Stack
 
@@ -18,10 +20,13 @@ This is a mini-project built using the MERN stack that allows users to:
 - **Express.js:** Backend framework for handling APIs.  
 - **React.js:** Frontend for building the user interface.  
 - **Node.js:** Backend runtime environment.  
+ 
+
 
 ## Setup Instructions
-
 1. **Clone the repository:**  
    ```bash
    git clone <repository-url>
    cd <project-folder>
+
+Feel free to explore and provide feedback! 😊  
