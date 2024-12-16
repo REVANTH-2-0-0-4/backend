@@ -1,18 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="bg-zinc-900 w-full h-screen p-10 text-white font-serif">
-        <div class="text-center text-[3vw] ">
-                Hey , <%= req.user.username %>
-        </div> 
+        <div class=" flex items-center justify-between"><a  href="/" class="text-blue-600">Back to Home </a><a  href="/logout" class="text-red-600">Logout</a></div>
+      <div class="flex items-center justify-center">
+        <span class="w-[3vw] h-[3vw] bg-red-900 rounded-md mr-2">
+          <img
+            src="<%= userdata.profilepic %>"
+            class="h-full w-full rounded-md z-20"
+          />
+        </span>
+        <div class="text-[3vw] mt-2">Hey , Hi <%= userdata.username %></div>
+      </div>
 
+      <div class="form mt-10 mb-2 text-[1.5vw]">Create a post</div>
+      <form action="/create/post" method="post">
+        <input
+          type="textarea"
+          name="content"
+          placeholder="whats on your mind today ? "
+          class="resize-none bg-zinc-600 rounded-lg p-5 w-[40vw] outline-none placeholder:text-center"
+        />
+        <input type="submit" class="p-2 bg-blue-700 rounded-lg" value="Create post">
+      </form>
+      <div class="text-center mt-2 text-[2vw]">Posts</div>
+      <div class="posts  mt-2 ">
+          <div class="post hover:border-zinc-600 hover:bg-zinc-800 border-2 p-2 border-solid border-zinc-700 rounded-lg w-[20vw] text-center">
+            <div class="text-left  ">@<%= userdata.username%></div>
+            <div class="content p-4">something goes here</div>
+            <div class="links w-full flex items-center justify-between mt-2 px-6">
+                <a class="text-blue-600">Edit</a>
+                <a class="text-red-600">delete</a>
+            </div>
+        </div>
+
+      </div>
     </div>
-    
-</body>
+  </body>
 </html>

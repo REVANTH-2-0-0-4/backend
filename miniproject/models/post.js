@@ -12,6 +12,10 @@ const postSchema = mongoose.Schema({
     date :{
         type : Date,
         default : Date.now
-    }
+    },
+    profilepic :{
+        type : String,
+        default : "/images/uploads/default.jpg"
+    } 
 })
 module.exports = mongoose.model('post',postSchema);
