@@ -7,10 +7,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const user = require('./models/user');
+const upload = require('./config/multerconfig');
+const { runInNewContext } = require('vm');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));    
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.get('/', (req, res) => {
     res.render("home");
@@ -45,9 +47,9 @@ app.post('/login', async (req, res) => {
     let { email, password } = req.body;
     // console.log(req.body);
     const user = await userModel.findOne({ email: email });
-    if (!user) return res.status(500).send("some thing has gone wrong , please try again later");
+    if (!user) return res.status(500).render("error");
     else bcrypt.compare(password, user.password, (err, result) => {
-        if (!result) res.status(500).send("some thing went wrong , please try again later");
+        if (!result) res.status(500).render("error");
         else {
             const token = jwt.sign({ email: email }, "secret");
             res.cookie("token", token);
@@ -60,21 +62,33 @@ app.get('/logout', async (req, res) => {
     res.redirect('/');
 })
 app.get('/profile', isloggedin, (req, res) => {
-    // console.log(req.cookies.userdata);
 
-    res.render("profile",{userdata : req.userdata});
+    res.render("profile", { userdata: req.userdata });
 })
-app.post("/create/post", isloggedin,async (req,res)=>{
+app.get('/uploadfile', isloggedin, (req, res) => {
+    res.render("uploadfile");
+})
+app.post('/uploadfile',isloggedin, upload.single('image'), async (req, res) => {
+  let data = req.userdata;
+//   console.log("data : ", data);
+  console.log(" file data  :  ", req.file.path);
+  
+  
+  data.profilepic = req.file.path;
+  await data.save();
+  res.redirect("/profile");
+})
+app.post("/create/post", isloggedin, async (req, res) => {
     let post = await postModel.create({
-        user : req.userdata._id,
-        content : req.body.content
+        user: req.userdata._id,
+        content: req.body.content
     })
-    let user = await userModel.findOne({_id : req.userdata._id});
+    let user = await userModel.findOne({ _id: req.userdata._id });
     user.posts.push(post._id);
     user.save();
     // console.log(post,user);
     res.redirect('/profile');
-    
+
 })
 async function isloggedin(req, res, next) {
     // console.log(req.cookies.token);
@@ -84,7 +98,7 @@ async function isloggedin(req, res, next) {
     else {
         const data = jwt.verify(req.cookies.token, "secret");
         // console.log(" data : ", data.email);
-        const userdata = await userModel.findOne({ email : data.email });
+        const userdata = await userModel.findOne({ email: data.email });
         req.userdata = userdata;
         next();
     }

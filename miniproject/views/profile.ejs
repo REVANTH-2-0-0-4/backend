@@ -15,9 +15,13 @@
             src="<%= userdata.profilepic %>"
             class="h-full w-full rounded-md z-20"
           />
+          <a href="/uploadfile" class="tracking-tighter text-sm text-zinc-500 pl-[0.3vw]">upload</a>
+          
+
         </span>
         <div class="text-[3vw] mt-2">Hey , Hi <%= userdata.username %></div>
       </div>
+      <!-- <div><a class="tracking-tighter text-sm text-blue-600 pl-[30vw]">upload</a></div> -->
 
       <div class="form mt-10 mb-2 text-[1.5vw]">Create a post</div>
       <form action="/create/post" method="post">
