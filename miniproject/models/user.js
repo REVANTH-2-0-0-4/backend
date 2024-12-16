@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema({
     password : String,
     profilepic: {
         type: String,
-        default: "/images/uploads/default.jpg"
+        default: "default.jpg"
     }
 })
 module.exports = mongoose.model('user',userSchema);

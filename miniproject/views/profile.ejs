@@ -8,16 +8,21 @@
   </head>
   <body>
     <div class="bg-zinc-900 w-full h-screen p-10 text-white font-serif">
-        <div class=" flex items-center justify-between"><a  href="/" class="text-blue-600">Back to Home </a><a  href="/logout" class="text-red-600">Logout</a></div>
+      <div class="flex items-center justify-between">
+        <a href="/" class="text-blue-600">Back to Home </a
+        ><a href="/logout" class="text-red-600">Logout</a>
+      </div>
       <div class="flex items-center justify-center">
         <span class="w-[3vw] h-[3vw] bg-red-900 rounded-md mr-2">
           <img
-            src="<%= userdata.profilepic %>"
-            class="h-full w-full rounded-md z-20"
+            src="/images/uploads/<%= userdata.profilepic %>"
+            class="h-full w-full bg-cover rounded-md z-20"
           />
-          <a href="/uploadfile" class="tracking-tighter text-sm text-zinc-500 pl-[0.3vw]">upload</a>
-          
-
+          <a
+            href="/uploadfile"
+            class="tracking-tighter text-sm text-zinc-500 pl-[0.3vw]"
+            >upload</a
+          >
         </span>
         <div class="text-[3vw] mt-2">Hey , Hi <%= userdata.username %></div>
       </div>
@@ -31,19 +36,26 @@
           placeholder="whats on your mind today ? "
           class="resize-none bg-zinc-600 rounded-lg p-5 w-[40vw] outline-none placeholder:text-center"
         />
-        <input type="submit" class="p-2 bg-blue-700 rounded-lg" value="Create post">
+        <input
+          type="submit"
+          class="p-2 bg-blue-700 rounded-lg"
+          value="Create post"
+        />
       </form>
       <div class="text-center mt-2 text-[2vw]">Posts</div>
-      <div class="posts  mt-2 ">
-          <div class="post hover:border-zinc-600 hover:bg-zinc-800 border-2 p-2 border-solid border-zinc-700 rounded-lg w-[20vw] text-center">
-            <div class="text-left  ">@<%= userdata.username%></div>
-            <div class="content p-4">something goes here</div>
-            <div class="links w-full flex items-center justify-between mt-2 px-6">
-                <a class="text-blue-600">Edit</a>
-                <a class="text-red-600">delete</a>
-            </div>
+      <div class="posts mt-2 flex gap-[3vw] flex-wrap">
+        <!-- <% posts.forEach(post => { %> -->
+        <div
+          class="post hover:border-zinc-600 hover:bg-zinc-800 border-2 p-2 border-solid border-zinc-700 rounded-lg w-[20vw] text-center"
+        >
+          <div class="text-left">@<%= userdata.username%></div>
+          <div class="content p-4">csxcvbn</div>
+          <div class="links w-full flex items-center justify-between mt-2 px-6">
+            <a class="text-blue-600">Edit</a>
+            <a class="text-red-600">delete</a>
+          </div>
         </div>
-
+        <!-- <% }); %> -->
       </div>
     </div>
   </body>

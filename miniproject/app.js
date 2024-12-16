@@ -71,23 +71,21 @@ app.get('/uploadfile', isloggedin, (req, res) => {
 app.post('/uploadfile',isloggedin, upload.single('image'), async (req, res) => {
   let data = req.userdata;
 //   console.log("data : ", data);
-  console.log(" file data  :  ", req.file.path);
-  
-  
-  data.profilepic = req.file.path;
+  console.log(" file data  :  ", req.file.filename);
+  data.profilepic = req.file.filename;
   await data.save();
   res.redirect("/profile");
 })
 app.post("/create/post", isloggedin, async (req, res) => {
-    let post = await postModel.create({
-        user: req.userdata._id,
-        content: req.body.content
-    })
-    let user = await userModel.findOne({ _id: req.userdata._id });
-    user.posts.push(post._id);
-    user.save();
-    // console.log(post,user);
-    res.redirect('/profile');
+    const user = req.userdata;
+    const post = await postModel.create({
+      user : user._id,
+      content : req.body.content
+    });
+    // const posts = await  postModel.find({user : user._id});
+    // console.log(posts);
+    
+    res.render('profile');
 
 })
 async function isloggedin(req, res, next) {
