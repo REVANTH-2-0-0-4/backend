@@ -132,17 +132,27 @@ app.post("/edit/:id", async (req, res) => {
 })
 
 async function isloggedin(req, res, next) {
-    if (req.cookies.token == "") {
-        res.redirect("/login");
-    }
-    else {
+    try {
+        
+        if (!req.cookies.token) {
+            return res.status(401).render("error", { 
+                message: "Authentication required. Please log in." 
+            });
+        }
         const data = jwt.verify(req.cookies.token, "secret");
         const userdata = await userModel.findOne({ email: data.email });
-        if (!userdata) return res.status(500).render("error");
+        if (!userdata) {
+            return res.status(403).render("error", { 
+                message: "Invalid authentication. Please log in again." 
+            });
+        }
         req.userdata = userdata;
         next();
+    } catch (error) {
+             return res.status(500).render("error", { 
+            message: "An unexpected error occurred. Please try again." 
+        });
     }
-
 }
 
 app.listen(3000, () => {
