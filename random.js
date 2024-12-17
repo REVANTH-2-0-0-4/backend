@@ -1,2 +1,3 @@
 // this file is used for doing random js stuff 
-console.log(Date.now());
+const date = new Date();
+console.log(date);

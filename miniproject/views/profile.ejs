@@ -29,7 +29,7 @@
       </div>
 
       <div class="form mt-10 mb-2 text-[1.5vw]">Create a post</div>
-      <form action="/create/post" method="post">
+      <form action="/create/post" method="post" class="flex items-center">
         <textarea
           name="content"
           placeholder="What's on your mind today?"
@@ -37,31 +37,36 @@
         ></textarea>
         <input
           type="submit"
-          class="p-2 bg-blue-700 rounded-lg"
+          class="p-4 bg-blue-700 rounded-lg ml-4"
           value="Create post"
         />
       </form>
 
       <div class="text-center mt-2 text-[2vw]">Posts</div>
-      <div class="posts  p-8  mt-2 flex gap-[3vw] flex-wrap">
+      <div class="posts p-8 mt-2 flex gap-[3vw] flex-wrap">
         <% if(posts.length == 0) { %>
-          <div class="text-zinc-600 tracking-tighter">No posts yet!</div>
-        <% } else { %>
-          <% posts.forEach(function(post) { %>
-            <div
-              class="post hover:border-zinc-600 hover:bg-zinc-800 border-2 p-2 border-solid border-zinc-700 rounded-lg w-[20vw] text-center"
-            >
-              <div class="text-left">@<%= userdata.username %></div>
-              <div class="content p-4"><%= post.content %></div>
-              <div
-                class="links w-full flex items-center justify-between mt-2 px-6"
-              >
-                <a href="#" class="text-blue-600">Edit</a>
-                <a href="#" class="text-red-600">Delete</a>
-              </div>
-            </div>
-          <% }) %>
-        <% } %>
+        <div class="text-zinc-600 tracking-tighter">No posts yet!</div>
+        <% } else { %> <% posts.reverse().forEach(function(post) { %>
+        <div
+          class="post hover:border-zinc-600 hover:bg-zinc-800 border-2 p-2 border-solid border-zinc-700 rounded-lg w-[20vw] text-center"
+        >
+          <div class="text-left">@<%= userdata.username %></div>
+          <div class="content p-4"><%= post.content %></div>
+
+          <div class="links w-full flex items-center justify-between mt-2 px-6">
+            <a href="/edit/<%= post._id %>" class="text-blue-600">Edit</a>
+            <a href="/like/<%= post._id %>" >
+              <% if(post.like.indexOf(userdata._id) === -1){ %>
+                <span class="text-blue-600">Like <%= post.like.length %></span>        
+                      <% } else { %>
+              <span class="text-red-600">Unlike <%= post.like.length %></span>
+              <% } %>
+             
+            </a>
+            <a href="/delete/<%= post._id %>" class="text-red-600">Delete</a>
+          </div>
+        </div>
+        <% }) %> <% } %>
       </div>
     </div>
   </body>

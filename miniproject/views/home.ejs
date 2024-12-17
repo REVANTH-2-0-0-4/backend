@@ -6,28 +6,39 @@
     <title>Mini Project: Social Media Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body >
+<body>
     <div class="bg-zinc-900 text-white font-serif flex flex-col items-center justify-center h-screen">
         
-        <div class="text-blue-600"> <a href="https://github.com/REVANTH-2-0-0-4/backend">Wanna have a look at My backend journey ? click now</a></div>
+        <div class="text-blue-600"> <a href="https://github.com/REVANTH-2-0-0-4/backend">Wanna have a look at the creators backend journey? Click now</a></div>
         <h1 class="text-4xl mb-4">Welcome to My Mini Project</h1>
-    <p class="text-lg mb-8 text-center max-w-xl">
-        This is a social media-like platform where you can create, edit, and delete posts, upload pictures, and like posts. 
-        Features include user authentication and authorization to ensure secure access. 
-        Start exploring by logging in or signing up!
-    </p>
-    <div class="flex gap-4">
-        <a href="/login" 
-           class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
-           Login
-        </a>
-        <a href="/signup" 
-           class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
-           Signup
-        </a>
+        <p class="text-lg mb-8 text-center max-w-xl">
+            This is a social media-like platform where you can create, edit, and delete posts, upload pictures, and like posts. 
+            Features include user authentication and authorization to ensure secure access. 
+            Start exploring by logging in or signing up!
+        </p>
+        <% if(loggedin){ %>
+            <div class="flex gap-4">
+                <a href="/profile" 
+                class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
+                Profile
+                </a>
+                <a href="/logout" 
+                class="bg-red-600 hover:bg-red-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
+                logout
+                </a>
+            </div>
+        <% } else { %>
+            <div class="flex gap-4">
+                <a href="/login" 
+                   class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
+                   Login
+                </a>
+                <a href="/signup" 
+                   class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-md text-lg transition duration-300">
+                   Signup
+                </a>
+            </div>
+        <% } %>
     </div>
-    
-    </div>
-    
 </body>
 </html>
