@@ -77,4 +77,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Author - revanthkurapati56@gmail.com
 
-Project Link: [https://github.com/yourusername/scatch](https://github.com/yourusername/scatch)
+Project Link: [Scatch](https://github.com/REVANTH-2-0-0-4/backend/tree/main/scatch)
