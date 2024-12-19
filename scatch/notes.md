@@ -194,6 +194,23 @@
   - Production: For end-user access.
 
 ---
+# Checking Port Usage Commands
 
+## Windows Command
+```cmd
+netstat -ano | findstr :27017
+```
+
+### Command Breakdown
+- **netstat**: Base command for network statistics
+- **Flags (-ano)**:
+  - `-a`: Shows all active connections
+  - `-n`: Displays addresses and port numbers numerically
+  - `-o`: Shows process ID (PID)
+- **|**: Pipe operator to forward output
+- **findstr :27017**: Filters for lines containing ":27017"
+
+
+These commands help identify processes using port 27017, which is MongoDB's default port.
 ### Reference Link 
 [complete-info](https://chatgpt.com/share/6763b197-7e84-8008-be8c-ff37023dcd86)
