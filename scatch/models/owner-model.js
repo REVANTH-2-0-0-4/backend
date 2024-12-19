@@ -8,7 +8,7 @@ const ownerSchema = mongoose.Schema({
     email : String,
     password : String,
     products: [],
-    picture : String,
+    image : Buffer,
     gstin : String
 })
 module.exports = mongoose.model("owner",ownerSchema);
