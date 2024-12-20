@@ -10,7 +10,7 @@ module.exports.login = async  (req, res) => {
                 if (result) {
                     const token = generatetoken(user);
                     res.cookie("token", token);
-                    res.redirect('/users/create');
+                    res.redirect('/');
                 }
                 else {
                     res.status(500).send("something went wrong please try again later1");

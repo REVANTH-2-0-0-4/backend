@@ -7,11 +7,6 @@ const { createuser } = require("../controllers/authcontroller");
 const generatetoken = require("../utils/generatetoken");
 // const flash = require("flash");
 const {login} = require("../controllers/logincontroller");
-
-
-router.get('/create', (req, res) => {
-    res.render("index");
-})
 router.get('/', (req, res) => {
     res.send("everything working fine");
 })
