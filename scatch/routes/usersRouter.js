@@ -3,9 +3,10 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const usermodel = require("../models/user-model");
 const { createDecipheriv } = require("crypto");
-const createuser = require("../controllers/authcontroller");
+const { createuser } = require("../controllers/authcontroller");
 const generatetoken = require("../utils/generatetoken");
 // const flash = require("flash");
+const {login} = require("../controllers/logincontroller");
 
 
 router.get('/create', (req, res) => {
@@ -14,20 +15,10 @@ router.get('/create', (req, res) => {
 router.get('/', (req, res) => {
     res.send("everything working fine");
 })
-router.post('/create', async(req,res)=>{
-    let { fullname, email, password } = req.body;
-    let user = await usermodel.findOne({ email: email });
-    if (user) {
-        res.send("user already exists");
-    }
-    else {
-       const createduser = createuser(email,password,fullname);
-       console.log(createduser);
-       const token = generatetoken(createduser);
-       res.cookie("token",token);
-       res.redirect('/users')
-    }
-
-
+router.post('/register', createuser)
+router.post('/login',login)
+router.get('/logout', (req, res) => {
+    res.cookie("token", "");
+    res.redirect("/users/create");
 })
 module.exports = router;
