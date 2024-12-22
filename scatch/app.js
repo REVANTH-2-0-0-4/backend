@@ -28,5 +28,5 @@ app.use("/users", usersRouter);
 app.use("/products", productsRouter);
 app.use("/", indexRouter);
 app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+    console.log('Server is running on the port 3000');
 });
