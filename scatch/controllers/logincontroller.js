@@ -7,13 +7,19 @@ module.exports.login = async  (req, res) => {
         let user = await usermodel.findOne({ email: email });
         if (user) {
             bcrypt.compare(password, user.password, (err, result) => {
+                if (err) {
+                    console.error("Error while comparing passwords:", err);
+                    return res.status(500).send("Internal Server Error");
+                }
+    
                 if (result) {
                     const token = generatetoken(user);
                     res.cookie("token", token);
+                    console.log(token);
                     res.redirect('/');
                 }
                 else {
-                    res.status(500).send("something went wrong please try again later1");
+                    res.status(401).send("invalid email or password");
                 }
             })
 

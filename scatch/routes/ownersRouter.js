@@ -3,9 +3,8 @@ const router = express.Router();
 require('dotenv').config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 const ownermodel = require("../models/owner-model")
-router.use(cookieParser());
+const productmodel = require("../models/product-model")
 if (process.env.NODE_ENV === "development") {
     try {
         router.post('/create', async (req, res) => {
@@ -32,8 +31,10 @@ if (process.env.NODE_ENV === "development") {
         res.status(500).send(err.message);
     }
 }
-router.get('/', (req, res) => {
-    res.send("hey its working");
+router.get('/admin', (req, res) => {
+    let success = req.flash("success")
+    res.render("createproduct",{success});
 })
+
 
 module.exports = router;

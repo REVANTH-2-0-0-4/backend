@@ -5,7 +5,7 @@ const isloggedin = require("../middlewares/isloggedin");
 
 router.get('/',function(req,res){
     // let error = req.flash("error");
-    res.render("index");
+    res.render("index",);
 })
 router.get("/shop",isloggedin,async (req,res)=>{
     let products =  await productmodel.find();    
