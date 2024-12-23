@@ -1,0 +1,69 @@
+git log --oneline ( shows the one line check points);
+git config --global core.autocrlf true : deals with the line endings
+git config --global core.editor "code --wait" ( provides the default editor , to perform all the operations related to git requiring input , modifications) code is for the vs code 
+
+it sets the default editor that Git will use for various operations requiring text input or modifications, such as:
+Writing commit messages:
+When you run git commit without the -m option, Git opens the editor for you to write a detailed commit message.
+Editing rebase instructions:
+During an interactive rebase (git rebase -i), Git uses the editor to allow you to modify the rebase plan.
+Merging conflict resolutions:
+If merge conflicts occur, Git opens the editor to allow you to modify the conflict resolution message.
+Amending commits:
+For example, when you run git commit --amend, Git opens the editor to let you update the commit message
+
+git status -s  this gives a concise staus of all the files in the working directory;
+it uses specific symbols ,to denote the files such as 
+??: Untracked file.
+A : File added to staging.
+M : File modified and staged.
+M: File modified but not staged.
+D : File deleted and staged.
+D: File deleted but not staged.
+git status tells only about those files which are committed or those modified after commit 
+
+commands for branching
+git branch branchname
+git switch branchname
+ or combinedly we can do git switch -C  branchname (which creates and switches)
+ git branch -- to showup all the branches
+ git branch -d branchname to delete that particular branching 
+ 
+MERGING WITH THE MAIN BRANCH 
+to merge with the main branch , we need to make sure that we are in the main branch 
+git merge branchname  --> directly merges if there are no conflicts (fastforward merging actually the head ptr is moved)\
+1. **Fast-Forward Merge:** Moves the target branch pointer to the source branch, as no divergent commits exist.
+
+2. **Three-Way Merge:** Combines changes from both branches and creates a new merge commit when both have diverged.( conflicts occur with three options , accept current changes(main ), accept incoming changes(branch),accept both the changes)  , we need to manually make a commit after merging 
+
+3. **Squash Merge:** Combines all commits from the source branch into a single commit on the target branch.
+.(explore)
+4. **Rebase and Merge:** Re-applies commits from the source branch onto the target branch as new commits, maintaining a linear history.(explore)
+
+
+CONCEPT OF STASHING : 
+lets say we are working in a repo  and  currently in  the main branch  and we want to move to  an other  branch , but we have some uncommitted changes in this main branch , you dont want to commit them , as you are not sure about the code , so you just want to visit the branch and check , at that time when we want to switch  the git doesnt allow  you to shift due to that untracked changes ,  we should either 
+delete those unstaged changes , or you can stash them  by git stash  that untracked ones are stored in the github , and when you switch to that branch and complete our work there  and come back  we can  get back those untracked ones by git stash apply
+if you want to clear the data stored  by stashing , you can do git stash clear 
+
+CONCEPT OF COLLAB : 
+main person creates the initial files 
+add , commit and push them , 
+add collaborators in the settings of the repo 
+he  clones , it 
+[VERY IMPORTANT  : ] he should create his own branch , other wise , we get too many conflicts 
+he does his work , commits it , pushes it to  the github(git push origin branchname)
+main person feches it 
+checks it and merges it , and then pushes it again 
+
+
+
+NOW git fetch and git pull 
+(find out  ra babu )
+ 
+
+
+
+
+
+
