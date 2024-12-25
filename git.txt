@@ -1,3 +1,6 @@
+In git oush origin main , origin is the default name given to the remote repository present in the github , 
+we are essentially telling that push the content into a repository named origin and in that push it to the main branch
+
 git log --oneline ( shows the one line check points);
 git config --global core.autocrlf true : deals with the line endings
 git config --global core.editor "code --wait" ( provides the default editor , to perform all the operations related to git requiring input , modifications) code is for the vs code 
@@ -55,6 +58,7 @@ he  clones , it
 he does his work , commits it , pushes it to  the github(git push origin branchname)
 main person feches it 
 checks it and merges it , and then pushes it again 
+
 
 
 
