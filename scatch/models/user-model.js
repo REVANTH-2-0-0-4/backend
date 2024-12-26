@@ -1,15 +1,22 @@
 const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
-    fullname : {
-        type : String,
-        minLength : 3,
-        trim : true
+    fullname: {
+        type: String,
+        minLength: 3,
+        trim: true
     },
-    email : String,
-    password : String,
-    cart : [],
-    orders : [],
-    contact : Number,
-    picture : Buffer
+    email: String,
+    password: String,
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product"
+    }
+    ],
+    orders: [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "product"
+    }],
+    contact: Number,
+    picture: Buffer
 })
-module.exports = mongoose.model("user",userSchema);
+module.exports = mongoose.model("user", userSchema);

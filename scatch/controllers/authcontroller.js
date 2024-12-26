@@ -20,7 +20,7 @@ module.exports.createuser = async (req, res) => {
                 });
                 const token = generatetoken(createduser);
                 res.cookie("token", token);
-                res.redirect('/')
+                res.redirect('/shop')
                 return createduser;
             } catch (error) {
                 console.error("Error creating user:", error);

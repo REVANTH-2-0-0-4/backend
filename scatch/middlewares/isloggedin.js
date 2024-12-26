@@ -6,7 +6,7 @@ const usermodel = require("../models/user-model");
 module.exports = async function (req, res, next) {
 
     if (!req.cookies.token ) {
-        res.redirect("/");
+         return res.redirect("/");
     }
     try {
         let decoded = jwt.verify(req.cookies.token, process.env.JWT_KEY);

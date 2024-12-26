@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="font-['helvetica_now_display']">
-    <nav class="w-full fixed top-0 left-0 px-5 py-3 text-blue-400 font-semibold">
-        <div class="text-3xl">S<span class="text-black" >catch</span></div>
+  </head>
+  <body class="font-serif">
+    <nav
+      class="w-full flex justify-between px-5 py-3 text-blue-400 font-semibold"
+    >
+      <div class="text-3xl">S<span class="text-black">catch</span></div>
+      <% var login = typeof loggedin !== "undefined" ? loggedin : true %> 
+      <% if(login){ %>
+      <div class="flex gap-7">
+        <a href="/shop">Shop</a>
+        <a href="/cart">cart</a>
+        <a href="">My Account</a>
+        <a href="/users/logout" class=" text-red-700">logout</a>
+      </div>
+      <% } %>
     </nav>
-</body>
+  </body>
 </html>
-
