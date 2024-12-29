@@ -17,11 +17,47 @@ app.get("/", (req, res) => {
 })
 io.on("connection", (socket) => {
     console.log("connected");
-    
-socket.on("disconnect", () => {
-    console.log("disconnected");
-})
-
+    if (!players.white) {
+        players.white = socket.id;
+        socket.emit("playerrole", "W");
+    }
+    else if (!players.black) {
+        players.black = socket.id;
+        socket.emit("playerrole", "B");
+    }
+    else {
+        socket.emit("spectatorrole");
+    }
+    socket.on("move", (move) => {
+        try {
+            if (chess.turn() === 'W' && socket.id !== white) return;
+            if (chess.turn() === 'B' && socket.id !== black) return;
+            else {
+                const result = chess.move(move);
+                if (result) {
+                    currentplayer = chess.turn();
+                    io.emit("move", move);
+                    io.emit("boardstate", chess.fen());
+                }
+                else {
+                    socket.emit("invalidmove", move);
+                }
+            }
+        }
+        catch (err) {
+            res.send(err.message);
+            socket.emit("invalidmove", move);
+        }
+    })
+    socket.on("disconnect", () => {
+        console.log("disconnected");
+        if (socket.id === players.white) {
+            delete players.white;
+        }
+        else if (socket.id === players.black) {
+            delete players.black;
+        }
+    })
 })
 server.listen(3000, () => {
     console.log("the server is running with a port number of 3000");
