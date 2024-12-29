@@ -1,12 +1,11 @@
-require("dotenv").config();
 const path = require("path");
 const express = require("express");
+const app = express();
 const socket = require("socket.io");
 const http = require("http");
-const { Chess } = require("chess.js");
-const app = express();
 const server = http.createServer(app);
 const io = socket(server);
+const { Chess } = require("chess.js");
 const chess = new Chess();
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,11 +18,11 @@ io.on("connection", (socket) => {
     console.log("connected");
     if (!players.white) {
         players.white = socket.id;
-        socket.emit("playerrole", "W");
+        socket.emit("playerrole", "w");
     }
     else if (!players.black) {
         players.black = socket.id;
-        socket.emit("playerrole", "B");
+        socket.emit("playerrole", "b");
     }
     else {
         socket.emit("spectatorrole");
@@ -35,9 +34,23 @@ io.on("connection", (socket) => {
             else {
                 const result = chess.move(move);
                 if (result) {
-                    currentplayer = chess.turn();
+                    currentplayer = chess.turn(); 
                     io.emit("move", move);
                     io.emit("boardstate", chess.fen());
+                }
+                if (chess.in_checkmate()) {
+                    console.log("sompaapidi");
+                    
+                    io.emit("gameover", {
+                        result: "checkmate",
+                        winner: chess.turn() === 'w' ? "Black" : "White"
+                    });
+                } else if (chess.in_draw()) {
+                    io.emit("gameover", { result: "draw", reason: "stalemate or insufficient material" });
+                } else if (chess.in_stalemate()) {
+                    io.emit("gameover", { result: "draw", reason: "stalemate" });
+                } else if (chess.in_threefold_repetition()) {
+                    io.emit("gameover", { result: "draw", reason: "threefold repetition" });
                 }
                 else {
                     socket.emit("invalidmove", move);
@@ -45,7 +58,6 @@ io.on("connection", (socket) => {
             }
         }
         catch (err) {
-            res.send(err.message);
             socket.emit("invalidmove", move);
         }
     })

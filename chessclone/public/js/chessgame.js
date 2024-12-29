@@ -6,6 +6,12 @@ let draggedpiece = null;
 let sourcesquare = null;
 let playerrole = null;
 const renderboard = () => {
+    if (playerrole === 'b') {
+        boardelement.classList.add("flipped");
+    }
+    else {
+        boardelement.classList.remove("flipped");
+    }
     const board = chess.board();
     boardelement.innerHTML = "";
     board.forEach((row, rowind) => {
@@ -39,13 +45,14 @@ const renderboard = () => {
             squareelement.addEventListener("dragover", (e) => {
                 e.preventDefault();
             })
-            squareelement.addEventListener("drop", () => {
+            squareelement.addEventListener("drop", (e) => {
                 e.preventDefault();
                 if (draggedpiece) {
                     const targetsource = {
                         row: parseInt(squareelement.dataset.row),
                         col: parseInt(squareelement.dataset.col),
                     }
+                    console.log(targetsource);
                     handlemove(sourcesquare, targetsource);
 
                 }
@@ -55,12 +62,7 @@ const renderboard = () => {
         })
     });
 }
-if (playerrole === 'b') {
-    boardelement.classList.add("flipped");
-}
-else {
-    boardelement.classList.remove("flipped");
-}
+
 const handlemove = (source, target) => {
     const move = {
         from: `${String.fromCharCode(97 + source.col)}${8 - source.row}`,
@@ -105,6 +107,25 @@ socket.on("move", (move) => {
     chess.move(move);
     renderboard();
 })
-
+socket.on("gameover", (data) => {
+    console.log("game aithe aipoindhi ra abbai");
+    
+    if (data.result === "checkmate") {
+        alert(`Game Over! Checkmate. Winner: ${data.winner}`);
+    } else if (data.result === "draw") {
+        alert(`Game Over! It's a draw. Reason: ${data.reason}`);
+    } else {
+        alert("Game Over! Unknown reason.");
+    }
+    const pieces = document.querySelectorAll(".piece");
+    pieces.forEach(piece => {
+        piece.classList.remove("draggable"); 
+        piece.style.cursor = "default"; 
+    });
+    resetgame();
+});
+function resetgame() {
+    location.reload();
+}
 renderboard();
 

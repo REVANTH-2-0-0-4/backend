@@ -1,0 +1,49 @@
+initialisation -> initialisation  board rendering -> drag and drop functionality -> socket event handling -client && -server
+
+
+
+initialisation : 
+sockets and chess objects are initialised
+board elements are selected from dom 
+intital values of the draggedpiece , sourcesquare , and playerrole are set to null
+
+initial board rendering
+renderboard() is called to display the initial state of the board 
+
+drag and drop functionality  : renderboard sets up drag and drop event listeners for each piece and square 
+pieces are draggable based on the players role 
+when a piece is dragged , draggedpieces and source square are set
+when a piece is dropped  a handle move function is called to handle the move logic and emit it to the server 
+
+
+now lets see about the client side 
+
+socket --> connection to the server using the socket.io 
+chess --> an instance of the chess class is initiated 
+board element -> dom element with the id chesshboard 
+dragged piece --> the piece being dragged in a drag and drop functionality
+sourcesquare --> stores the startingsquare of the dragged piece 
+playerrole = holds the role of the player( w for white , b for black , and null for a spectator)
+
+
+client side functions : 
+ renderboard 
+ handlemove 
+ getpieceunicode 
+
+
+socket client side 
+on playerrole 
+on spectator role 
+on boardstate 
+on move 
+
+
+functionalities of the events of the client side
+ renderboard : renders the chesshboard : sets up the pieces and the squares , adds event listeners for drag and drop functionalities,updates board orientation 
+ handle move  : constructs a move object , emits a move event through the socket 
+ getpieceunicode : gets the unicode of each piece 
+ socket.on("playerrole")  : sets the playerrole calls the renderboard 
+ socket.on("spectatorrole")  : sets the playerrole to null  calls the renderboard 
+ socket.on("boardstate")  : loads an fen into the chess game and   calls the renderboard 
+ socket.on("move")  : applies the move to the chess game and calls the renderboard  
