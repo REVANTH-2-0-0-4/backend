@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
                     io.emit("move", move);
                     io.emit("boardstate", chess.fen());
                 }
-                if (chess.in_checkmate()) {
+                if (chess.isCheckmate()){
                     console.log("sompaapidi");
                     
                     io.emit("gameover", {
