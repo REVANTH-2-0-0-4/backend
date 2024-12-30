@@ -1,0 +1,4 @@
+Difference between CommonJS and ES Modules
+A good blog to read : https://www.syncfusion.com/blogs/post/js-commonjs-vs-es-modules
+also refer https://claude.ai/chat/0489c4e0-0e9c-4170-a88b-447799c68331 to understand the Difference in exporting and importing in both 
+while importing , file extension should be mentioned while following es module system 
