@@ -1,8 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
 import mongoose from "mongoose";
 // console.log(process.env.MONGODB_URI);
 
-export function connect() {
-    mongoose.connect("mongodb://0.0.0.0/soen")
+ function connect(){
+    mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Connected to MongoDB successfully");
     })
@@ -10,3 +12,4 @@ export function connect() {
         console.error("Error connecting to MongoDB:", err);
     });
 }
+export default connect;
