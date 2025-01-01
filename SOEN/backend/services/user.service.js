@@ -11,7 +11,7 @@ export async function createuser({ email, password }) {
 }
 export async function loginuser({ email, password }) {
     try {
-        const user = await usermodel.findOne({ email: email });
+        const user = await usermodel.findOne({ email: email }).select("+password");
         if (!user) {
             throw new Error("Invalid credentials");
         }

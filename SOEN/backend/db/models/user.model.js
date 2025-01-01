@@ -13,7 +13,7 @@ const userschema = new mongoose.Schema({
     },
     password  : {
         type : String,
-        Select : false,
+        select : false
     }   
 }) 
 userschema.statics.hashpassword = async(password)=>{
