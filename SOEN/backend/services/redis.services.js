@@ -5,5 +5,5 @@ export const redisclient = new Redis({
     password : process.env.REDIS_PASSWORD
 });
 redisclient.on("connect",()=>{
-    console.log("redisconnected");
+    console.log("redis-connected");
 })

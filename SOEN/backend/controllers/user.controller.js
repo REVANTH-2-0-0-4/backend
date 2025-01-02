@@ -25,24 +25,30 @@ export const logincontroller = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    else{
+    else {
         const response = await userservice.loginuser(req.body);
         console.log(response);
-        
-        if(response.status === "error"){
+
+        if (response.status === "error") {
             res.status(401).send(response.message);
         }
-        else{
+        else {
             const token = response.generateJWT();
-            res.status(200).json({response,token})
+            res.status(200).json({ response, token })
         }
-    }   
+    }
 }
-export const profilecontroller = async(req,res) =>{
- res.status(200).json({
-    user : req.user
- })
+export const profilecontroller = async (req, res) => {
+    res.status(200).json({
+        user: req.user
+    })
 }
-export const logoutcontroller = async(req,res) =>{
-
+export const logoutcontroller = async (req, res) => {
+    try {
+        const token = req.cookies.token || req.headers.authorisation.split(' ')[1];
+        redisclient.set(token,'logout','EX',60*60*24);
+    }
+    catch (err) {
+        res.status(400).send(err);
+    }
 }
