@@ -1,10 +1,7 @@
-import React from 'react'
-
+import Approutes from "./Routes/Approutes"
 const App = () => {
   return (
-    <div>
-      home
-    </div>
+     <Approutes/>
   )
 }
 

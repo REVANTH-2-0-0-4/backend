@@ -2,6 +2,7 @@ import usermodel from "../db/models/user.model.js"
 import * as userservice from "../services/user.service.js"
 import { validationResult } from "express-validator";
 import { redisclient } from "../services/redis.services.js";
+import user from "../db/models/user.model.js";
 export const createusercontroller = async (req, res) => {
 
     const errors = validationResult(req);
@@ -12,6 +13,8 @@ export const createusercontroller = async (req, res) => {
         try {
             const user = await userservice.createuser(req.body);
             const token = user.generateJWT();
+            delete user._doc.password;
+
             res.status(201).json({ user, token });
 
         }
@@ -34,6 +37,7 @@ export const logincontroller = async (req, res) => {
         }
         else {
             const token = response.generateJWT();
+            delete response._doc.password;
             res.status(200).json({ response, token })
         }
     }
