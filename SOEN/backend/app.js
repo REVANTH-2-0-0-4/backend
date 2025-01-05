@@ -2,6 +2,7 @@ import connect from "./db/db.js";
 connect();
 import express from "express";
 import userrouter from "./routes/user.routes.js"
+import projectroutes from "./routes/project.routes.js"
 import cors from "cors";
 const app = express();
 app.use(cors());
@@ -14,5 +15,6 @@ app.use(express.urlencoded({extended:true}));
 app.get("/",(req,res)=>{
     res.send(" haa chal raha hai beta");
 })
+app.use("/projects",projectroutes);
 app.use("/users",userrouter);
 export default app;
