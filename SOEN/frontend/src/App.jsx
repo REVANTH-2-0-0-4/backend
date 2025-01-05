@@ -1,7 +1,11 @@
+import  Context  from '../src/context/Usercontext.jsx';
 import Approutes from "./Routes/Approutes"
 const App = () => {
   return (
-     <Approutes/>
+    <Context>
+      <Approutes/>
+    </Context>
+    
   )
 }
 

@@ -38,7 +38,7 @@ export const logincontroller = async (req, res) => {
         else {
             const token = response.generateJWT();
             delete response._doc.password;
-            res.status(200).json({ response, token })
+            res.status(200).json({ response, token });
         }
     }
 }
