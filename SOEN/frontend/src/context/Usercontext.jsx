@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';  // Add this import
 export const UserContext = createContext();
 
  const Context = ({ children }) => {  // Destructure children from props
-  const [user, setUser] = useState(null);
+  const [user, setUser] =  useState(null);
   console.dir(children);
 
   return (

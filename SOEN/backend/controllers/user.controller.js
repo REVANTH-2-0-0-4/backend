@@ -61,3 +61,27 @@ export const logoutcontroller = async (req, res) => {
         res.status(400).send(err);
     }
 }
+export const getallusers = async (req, res) => {
+    try {
+      const loggedin_user = req.user?.email;
+      if (!loggedin_user) {
+        return res.status(401).send("User not logged in.");
+      }
+      const user = await usermodel.findOne({ email: loggedin_user });
+      if (!user) {
+        return res.status(404).send("Logged-in user not found.");
+      }
+      const response = await userservice.allusersexceptid(user._id); 
+  
+      if (response.status === "error") {
+        return res.status(400).send(response.message);
+      }
+  
+      console.log("The response:", response);
+      return res.status(200).send(response.allusers);
+  
+    } catch (error) {
+      return res.status(500).send(error.message); // Changed to 500 for server-side error
+    }
+  };
+  

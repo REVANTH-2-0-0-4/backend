@@ -26,3 +26,26 @@ export async function loginuser({ email, password }) {
         return { status: "error", message: err.message };
     }
 }
+export const allusersexceptid = async(userid) =>{
+    try {
+      if(!userid){
+         throw new Error(" project services didnot recieve the userid, may be you are not logged in ");
+      }
+      const allusers = await usermodel.find({
+        _id : { $ne : userid}
+      })
+    //   console.log(" all users : " , allusers);
+      
+      return {
+        "status" : "success",
+        "allusers" : allusers
+      };
+    } catch (error) {
+      return {
+       "status" : "error",
+       "message" : error.message
+      }
+    }
+   
+   }
+   
