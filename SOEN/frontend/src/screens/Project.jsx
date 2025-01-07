@@ -120,7 +120,18 @@ const Project = () => {
                     </button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 flex-col message_box overflow-y-auto text-white pt-2 pr-4 tracking-tighter">
+                    <div className='incoming message flex flex-col  '>
+                    <small
+                    className='opacity-65 text-xs'
+                    >example@gmail.com</small>
+                        <p className='bg-zinc-700 p-1 rounded-r-[0.7vw] px-2 w-fit'>
+                        incoming message
+                         </p> 
+                         
+                    </div>
+                    
+                 
                 </div>
 
                 <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">
