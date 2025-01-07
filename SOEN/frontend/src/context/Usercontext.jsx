@@ -5,7 +5,6 @@ export const UserContext = createContext();
 
  const Context = ({ children }) => {  // Destructure children from props
   const [user, setUser] =  useState(null);
-  console.dir(children);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

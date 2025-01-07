@@ -20,5 +20,5 @@ router.put('/add-user',
         .withMessage("Every user ID should be a string"),
     projectcontroller.adduser
 )
-router.get("/get-project/:id",projectcontroller.getproject);
+router.get("/get-project/:id",authmiddleware.auth,projectcontroller.getproject);
 export default router;
