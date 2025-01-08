@@ -8,7 +8,8 @@ import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 
 const Project = () => {
     const location = useLocation();
-    const project = location.state;
+    const pro = location.state;
+    const [project, setProject] = useState(pro);
     const [isSliderOpen, setIsSliderOpen] = useState(false);
     const [isAddUserOpen, setIsAddUserOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -27,6 +28,12 @@ const Project = () => {
             setLoading(false);
         }
     };
+
+    const fetchprojectdata = async () => {
+        const res = await axios.get(`/projects/get-project/${project._id}`);
+        console.log("purna : " ,res.data);
+        setProject(res.data);
+    }
     useEffect(() => {
         if (isAddUserOpen) {
             fetchAllUsers();
@@ -45,17 +52,34 @@ const Project = () => {
     };
 
     const addUsersToProject = async () => {
+        
         try {
             await axios.put('/projects/add-user', {
                 projectid: project._id,
-                users: selectedUsers
+                users: selectedUsers,
             });
+            fetchprojectdata();
+
             setIsAddUserOpen(false);
+
+            setProject((prev) => {
+
+                const updatedUsers = new Set([...prev.users]);
+                selectedUsers.forEach((user) => updatedUsers.add(user));
+                const updatedproject = {
+                    ...prev,
+                    users: Array.from(updatedUsers),
+                };
+                console.log("updated project : ", updatedproject)
+                return updatedproject;
+            });
+
             setSelectedUsers([]);
         } catch (error) {
             console.error('Error adding users:', error.response?.data || error.message);
         }
     };
+
 
     const openUserModal = (user) => {
         setSelectedUser(user);
@@ -160,8 +184,8 @@ const Project = () => {
                         <X className="w-5 h-5" />
                     </button>
                 </div>
-
                 <div className="p-4 space-y-4">
+                
                     {project?.users?.map((user) => (
                         <div
                             key={user._id}
@@ -178,7 +202,11 @@ const Project = () => {
                                 ) : (
                                     <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center">
                                         <span className="text-zinc-300 text-lg uppercase">
-                                            {user.email[0]}
+                                       
+                                        {/* {console.log("em type anta ra babu : ", (user.email.charAt(0)))}
+                                        {console.log(" project antara babu : ",project.users)} */}
+                                            {/* {user.email.charAt(0)} */}
+                                            R
                                         </span>
                                     </div>
                                 )}
