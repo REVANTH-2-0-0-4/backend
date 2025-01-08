@@ -5,6 +5,7 @@ import { Users, X, Mail, Hash, Briefcase } from 'lucide-react';
 import { BsPersonFillAdd } from "react-icons/bs";
 import axios from '../config/axios.js';
 import Selectedusermodal from '../modals/Selectedusermodal.jsx';
+import { initializesocket } from '../config/socket.js';
 
 const Project = () => {
     const location = useLocation();
@@ -31,7 +32,7 @@ const Project = () => {
 
     const fetchprojectdata = async () => {
         const res = await axios.get(`/projects/get-project/${project._id}`);
-        console.log("purna : " ,res.data);
+        console.log("purna : ", res.data);
         setProject(res.data);
     }
     useEffect(() => {
@@ -52,7 +53,7 @@ const Project = () => {
     };
 
     const addUsersToProject = async () => {
-        
+
         try {
             await axios.put('/projects/add-user', {
                 projectid: project._id,
@@ -185,7 +186,7 @@ const Project = () => {
                     </button>
                 </div>
                 <div className="p-4 space-y-4">
-                
+
                     {project?.users?.map((user) => (
                         <div
                             key={user._id}
@@ -202,11 +203,9 @@ const Project = () => {
                                 ) : (
                                     <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center">
                                         <span className="text-zinc-300 text-lg uppercase">
-                                       
-                                        {/* {console.log("em type anta ra babu : ", (user.email.charAt(0)))}
-                                        {console.log(" project antara babu : ",project.users)} */}
-                                            {/* {user.email.charAt(0)} */}
-                                            R
+
+                                            {/* {console.log("User fisrt letter:", (user?.email)[0])} */}
+                                            {user?.email?.[0]?.toUpperCase() || "?"}
                                         </span>
                                     </div>
                                 )}
