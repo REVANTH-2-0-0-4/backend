@@ -1,13 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { IoSend } from "react-icons/io5";
 import { Users, X, Mail, Hash, Briefcase } from 'lucide-react';
+import { BsPersonFillAdd } from "react-icons/bs";
+import axios from '../config/axios.js';
+import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 
 const Project = () => {
     const location = useLocation();
     const project = location.state;
     const [isSliderOpen, setIsSliderOpen] = useState(false);
+    const [isAddUserOpen, setIsAddUserOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [allUsers, setAllUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [isOutgoing, setisOutgoing] = useState(false);
+    const fetchAllUsers = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('/users/allusers');
+            setAllUsers(response.data);
+        } catch (error) {
+            console.error('Error fetching users:', error.response?.data || error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        if (isAddUserOpen) {
+            fetchAllUsers();
+        }
+    }, [isAddUserOpen]);
+
+
+    const toggleUserSelection = (userId) => {
+        setSelectedUsers(prev => {
+            if (prev.includes(userId)) {
+                return prev.filter(id => id !== userId);
+            } else {
+                return [...prev, userId];
+            }
+        });
+    };
+
+    const addUsersToProject = async () => {
+        try {
+            await axios.put('/projects/add-user', {
+                projectid: project._id,
+                users: selectedUsers
+            });
+            setIsAddUserOpen(false);
+            setSelectedUsers([]);
+        } catch (error) {
+            console.error('Error adding users:', error.response?.data || error.message);
+        }
+    };
 
     const openUserModal = (user) => {
         setSelectedUser(user);
@@ -15,79 +63,115 @@ const Project = () => {
 
     return (
         <div className="w-full h-screen flex font-serif relative">
-            {/* User Modal */}
-            {selectedUser && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20">
-                    <div className="bg-zinc-900 rounded-xl p-6 w-96 space-y-6 relative shadow-2xl border border-zinc-700">
-                        <button 
-                            onClick={() => setSelectedUser(null)}
-                            className="absolute right-4 top-4 text-zinc-400 hover:text-white transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+            <Selectedusermodal
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+                project={project}
+            />
 
-                        <div className="flex flex-col items-center gap-4">
-                            {selectedUser.profilePic ? (
-                                <img 
-                                    src={selectedUser.profilePic} 
-                                    alt={selectedUser.email}
-                                    className="w-24 h-24 rounded-full object-cover border-4 border-zinc-700"
-                                />
+
+
+            {isAddUserOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
+                    <div className="bg-zinc-900 rounded-xl p-6 w-96 space-y-6 relative shadow-2xl border border-zinc-700">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-white text-lg">Add Collaborators</h3>
+                            <button
+                                onClick={() => setIsAddUserOpen(false)}
+                                className="text-zinc-400 hover:text-white transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="max-h-[40vh] overflow-y-auto space-y-4">
+                            {loading ? (
+                                <div className="text-center text-zinc-400">Loading users...</div>
                             ) : (
-                                <div className="w-24 h-24 rounded-full bg-zinc-700 flex items-center justify-center border-4 border-zinc-600">
-                                    <span className="text-zinc-300 text-3xl uppercase">
-                                        {selectedUser.email[0]}
-                                    </span>
-                                </div>
+                                allUsers.map((user) => (
+                                    <div
+                                        key={user._id}
+                                        className={`bg-zinc-800/50 rounded-lg p-1 px-2 w-[90%] cursor-pointer transform transition-all duration-300 ease-in-out hover:scale-[1.02] hover:bg-zinc-800
+                                            ${selectedUsers.includes(user._id)
+                                                ? ' bg-blue-500/10 '
+                                                : 'hover:shadow-lg hover:shadow-zinc-700/20'
+                                            }`}
+                                        onClick={() => toggleUserSelection(user._id)}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {user.profile ? (
+                                                <img
+                                                    src={user.profile}
+                                                    alt={user.email}
+                                                    className={`w-10 h-10 rounded-full object-cover transition-all duration-300 ${selectedUsers.includes(user._id)
+                                                        ? 'ring-2 ring-blue-500 scale-110'
+                                                        : ''
+                                                        }`}
+                                                />
+                                            ) : (
+                                                <div className={`w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center transition-all duration-300 ${selectedUsers.includes(user._id)
+                                                    ? 'ring-2 ring-blue-500 scale-110 bg-blue-600'
+                                                    : ''
+                                                    }`}>
+                                                    <span className="text-zinc-300 text-lg uppercase">
+                                                        {user.email[0]}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <p className={`text-white transition-all duration-300 ${selectedUsers.includes(user._id)
+                                                ? 'font-medium scale-105'
+                                                : ''
+                                                }`}>{user.email}</p>
+                                        </div>
+                                    </div>
+                                ))
                             )}
-                            
-                            <div className="space-y-4 w-full">
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <Mail className="w-5 h-5" />
-                                    <span>{selectedUser.email}</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <Hash className="w-5 h-5" />
-                                    <span>ID: {selectedUser._id}</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <Briefcase className="w-5 h-5" />
-                                    <span>Collaborator in {project?.name}</span>
-                                </div>
-                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsAddUserOpen(false)}
+                                className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={addUsersToProject}
+                                disabled={selectedUsers.length === 0}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Add Selected Users
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Collaborators Slider */}
-            <div 
+            <div
                 className={`absolute top-0 left-0 h-full bg-zinc-900/95 backdrop-blur-sm border-r border-zinc-700 transition-all duration-300 ease-in-out z-10 overflow-y-auto
                 ${isSliderOpen ? 'w-[30%] opacity-100' : 'w-0 opacity-0'}`}
             >
                 <div className="p-4 bg-zinc-800/50 flex justify-between items-center">
                     <h3 className="text-white text-lg">Collaborators</h3>
-                    <button 
+                    <button
                         onClick={() => setIsSliderOpen(false)}
                         className="text-zinc-400 hover:text-white transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
-                
+
                 <div className="p-4 space-y-4">
                     {project?.users?.map((user) => (
-                        <div 
-                            key={user._id} 
+                        <div
+                            key={user._id}
                             className="bg-zinc-800/50 rounded-lg p-4 space-y-3 cursor-pointer hover:bg-zinc-800 transition-colors"
                             onClick={() => openUserModal(user)}
                         >
                             <div className="flex items-center gap-3">
-                                {user.profilePic ? (
-                                    <img 
-                                        src={user.profilePic} 
+                                {user.profile ? (
+                                    <img
+                                        src={user.profile}
                                         alt={user.email}
                                         className="w-10 h-10 rounded-full object-cover"
                                     />
@@ -108,30 +192,42 @@ const Project = () => {
                 </div>
             </div>
 
-            {/* Main Layout */}
             <div className="w-[30%] h-full bg-zinc-900 flex flex-col">
                 <div className="p-4 bg-zinc-800 flex justify-between">
                     <h2 className="text-white text-xl font-serif">{project?.name || 'Messages'}</h2>
-                    <button 
-                        onClick={() => setIsSliderOpen(true)}
-                        className="hover:text-white transition-colors"
-                    >
-                        <Users className="text-zinc-400 mt-1 hover:text-white transition-colors" />
-                    </button>
-                </div>
-                
-                <div className="flex-1 flex-col message_box overflow-y-auto text-white pt-2 pr-4 tracking-tighter">
-                    <div className='incoming message flex flex-col  '>
-                    <small
-                    className='opacity-65 text-xs'
-                    >example@gmail.com</small>
-                        <p className='bg-zinc-700 p-1 rounded-r-[0.7vw] px-2 w-fit'>
-                        incoming message
-                         </p> 
-                         
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setIsAddUserOpen(true)}
+                            className="hover:text-white transition-colors"
+                        >
+                            <BsPersonFillAdd className="text-zinc-400 mt-1 h-7 w-7 hover:text-white transition-colors" />
+                        </button>
+                        <button
+                            onClick={() => setIsSliderOpen(true)}
+                            className="hover:text-white transition-colors"
+                        >
+                            <Users className="text-zinc-400 mt-1 hover:text-white transition-colors" />
+                        </button>
                     </div>
-                    
-                 
+                </div>
+
+                <div className="flex-1 flex-col message_box overflow-y-auto text-white pt-2">
+                    <div className={`flex flex-col w-fit max-w-[75%] ${isOutgoing ? 'ml-auto' : ''}`}>
+                        <div className={`
+                        rounded-2xl
+                        ${isOutgoing ?
+                                'bg-blue-600 text-white rounded-tr-none' :
+                                'bg-gray-700 text-white rounded-tl-none'
+                            }
+                         `}>
+                            <div className="px-3 pt-2 pb-1">
+                                <small className="text-gray-300 text-xs">revanth@gmail.com</small>
+                            </div>
+                            <div className="px-3 pb-3 break-words">
+                                the message thats gonne be sent to the person
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">
