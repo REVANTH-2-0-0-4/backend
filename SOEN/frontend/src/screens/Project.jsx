@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { IoSend } from "react-icons/io5";
 import { Users, X, Mail, Hash, Briefcase } from 'lucide-react';
 import { BsPersonFillAdd } from "react-icons/bs";
 import axios from '../config/axios.js';
 import Selectedusermodal from '../modals/Selectedusermodal.jsx';
-import { initializesocket } from '../config/socket.js';
-
+import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
+import usercontext from "../context/Usercontext.jsx"
 const Project = () => {
+    const {user} = useContext(usercontext);
     const location = useLocation();
     const pro = location.state;
     const [project, setProject] = useState(pro);
@@ -18,6 +19,7 @@ const Project = () => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isOutgoing, setisOutgoing] = useState(false);
+    const [message, setMessage] = useState("");
     const fetchAllUsers = async () => {
         try {
             setLoading(true);
@@ -35,7 +37,15 @@ const Project = () => {
         console.log("purna : ", res.data);
         setProject(res.data);
     }
+    const send = () => {
+        sendmessage("project-message",{
+            message : message,
+            sender : user
+        })
+
+    }
     useEffect(() => {
+        initializesocket(pro._id);
         if (isAddUserOpen) {
             fetchAllUsers();
         }
@@ -260,11 +270,16 @@ const Project = () => {
                 <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">
                     <div className="flex items-center gap-2">
                         <input
+                            name='message'
+                            value={message}
+                            onChange={(e) => { setMessage(e.target.value) }}
                             type="text"
                             placeholder="Type a message..."
                             className="flex-1 bg-zinc-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 font-serif"
                         />
-                        <button className="bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700 flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/20 h-10 w-10">
+                        <button
+                            onClick={send}
+                            className="bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700 flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/20 h-10 w-10">
                             <IoSend className="w-5 h-5" />
                         </button>
                     </div>
@@ -273,7 +288,7 @@ const Project = () => {
 
             <div className="w-[70%] h-full bg-gradient-to-br from-zinc-800 to-zinc-900">
             </div>
-        </div>
+        </div >
     );
 };
 
