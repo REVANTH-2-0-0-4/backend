@@ -13,7 +13,7 @@ export const createproject = async (req, res) => {
   try {
     const loggedin_user = req.user.email;
 
-    console.log("Email check:", loggedin_user);
+    // console.log("Email check:", loggedin_user);
 
 
     const user = await usermodel.findOne({ email: loggedin_user });

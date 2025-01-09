@@ -30,7 +30,7 @@ export const logincontroller = async (req, res) => {
     }
     else {
         const response = await userservice.loginuser(req.body);
-        console.log(response);
+        // console.log(response);
 
         if (response.status === "error") {
             res.status(401).send(response.message);
@@ -77,7 +77,7 @@ export const getallusers = async (req, res) => {
         return res.status(400).send(response.message);
       }
   
-      console.log("The response:", response);
+    //   console.log("The response:", response);
       return res.status(200).send(response.allusers);
   
     } catch (error) {

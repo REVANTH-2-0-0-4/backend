@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { IoSend } from "react-icons/io5";
 import { Users, X, Mail, Hash, Briefcase } from 'lucide-react';
@@ -6,9 +6,9 @@ import { BsPersonFillAdd } from "react-icons/bs";
 import axios from '../config/axios.js';
 import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
-import usercontext from "../context/Usercontext.jsx"
+import { UserContext } from "../context/Usercontext.jsx"
 const Project = () => {
-    const {user} = useContext(usercontext);
+    const { user } = useContext(UserContext);
     const location = useLocation();
     const pro = location.state;
     const [project, setProject] = useState(pro);
@@ -20,6 +20,7 @@ const Project = () => {
     const [loading, setLoading] = useState(false);
     const [isOutgoing, setisOutgoing] = useState(false);
     const [message, setMessage] = useState("");
+    const messagebox = useRef();
     const fetchAllUsers = async () => {
         try {
             setLoading(true);
@@ -32,24 +33,91 @@ const Project = () => {
         }
     };
 
+
+    const appendIncomingMessage = (data) => {
+        const messageBox = document.querySelector('.message_box');
+        const messageDiv = document.createElement('div');
+
+        messageDiv.className = 'flex flex-col w-fit max-w-[75%] ml-1';
+
+        messageDiv.innerHTML = `
+            <div class="rounded-2xl bg-gray-700 text-white rounded-tl-none">
+                <div class="px-3 pt-2 pb-1 ">
+                    <small class="text-gray-300 text-xs">${data.sender.email}</small>
+                </div>
+                <div class="px-3 pb-3 break-words">
+                    ${data.message}
+                </div>
+            </div>
+        `;
+
+        messageBox.appendChild(messageDiv);
+        // Scroll to bottom of message box
+        messageBox.scrollTop = messageBox.scrollHeight;
+    };
+    const appendOutgoingMessage = (messageText, email) => {
+        const messageBox = document.querySelector('.message_box');
+        const messageDiv = document.createElement('div');
+
+        messageDiv.className = 'flex flex-col w-fit max-w-[75%] ml-auto';
+
+        messageDiv.innerHTML = `
+            <div class="rounded-2xl bg-blue-600 text-white rounded-tr-none">
+                <div class="px-3 pt-2 pb-1">
+                    <small class="text-gray-300 text-xs">${email}</small>
+                </div>
+                <div class="px-3 pb-3 break-words">
+                    ${messageText}
+                </div>
+            </div>
+        `;
+
+        messageBox.appendChild(messageDiv);
+        // Scroll to bottom of message box
+        messageBox.scrollTop = messageBox.scrollHeight;
+    };
+
+
     const fetchprojectdata = async () => {
         const res = await axios.get(`/projects/get-project/${project._id}`);
-        console.log("purna : ", res.data);
+        // console.log("purna : ", res.data);
         setProject(res.data);
     }
     const send = () => {
-        sendmessage("project-message",{
-            message : message,
-            sender : user
+        sendmessage("project-message", {
+            message: message,
+            sender: user
         })
+        appendOutgoingMessage(message, user.email);
+        setMessage("");
 
     }
     useEffect(() => {
-        initializesocket(pro._id);
-        if (isAddUserOpen) {
-            fetchAllUsers();
-        }
-    }, [isAddUserOpen]);
+        // Initialize the socket
+        const socket = initializesocket(pro._id);
+
+        // Define the message handler
+        const handleMessage = (data) => {
+            console.log(data);
+            appendIncomingMessage(data);
+        };
+
+        // Set up the listener for "project-message"
+        socket.on("project-message", handleMessage);
+
+        // Fetch all users
+        fetchAllUsers();
+
+        // Cleanup function
+        return () => {
+            // Remove the specific listener for "project-message"
+            socket.off("project-message", handleMessage);
+
+            // Optionally disconnect the socket if no longer needed
+            socket.disconnect();
+        };
+    }, []);
+
 
 
     const toggleUserSelection = (userId) => {
@@ -81,7 +149,7 @@ const Project = () => {
                     ...prev,
                     users: Array.from(updatedUsers),
                 };
-                console.log("updated project : ", updatedproject)
+                // console.log("updated project : ", updatedproject)
                 return updatedproject;
             });
 
@@ -248,8 +316,10 @@ const Project = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 flex-col message_box overflow-y-auto text-white pt-2">
-                    <div className={`flex flex-col w-fit max-w-[75%] ${isOutgoing ? 'ml-auto' : ''}`}>
+                <div
+                    ref={messagebox}
+                    className="flex-1 flex-col message_box overflow-y-auto text-white pt-2 gap-y-1 scrollbar-hide">
+                    {/* <div className={`flex flex-col w-fit max-w-[75%] ${isOutgoing ? 'ml-auto' : ''}`}>
                         <div className={`
                         rounded-2xl
                         ${isOutgoing ?
@@ -264,7 +334,7 @@ const Project = () => {
                                 the message thats gonne be sent to the person
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">

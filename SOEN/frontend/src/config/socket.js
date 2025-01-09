@@ -16,6 +16,7 @@ export const initializesocket = (projectid) => {
 export const recievemessage = (eventname, cb) => {
     socketinstance.on(eventname, cb);
 }
+
 export const sendmessage = (eventname, data) => {
         socketinstance.emit(eventname,data);
 }
