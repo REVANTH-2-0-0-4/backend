@@ -6,7 +6,32 @@ import { BsPersonFillAdd } from "react-icons/bs";
 import axios from '../config/axios.js';
 import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
-import { UserContext } from "../context/Usercontext.jsx"
+import { UserContext } from "../context/Usercontext.jsx";
+
+const MessageBubble = ({ message, isOutgoing, isAI }) => {
+    const baseClasses = "flex flex-col w-fit max-w-[75%] mt-1";
+    const bubbleClasses = `rounded-2xl ${
+        isAI ? "bg-purple-100 text-white rounded-tl-none" :
+        isOutgoing ? "bg-blue-600 text-white rounded-tr-none" :
+        "bg-gray-700 text-white rounded-tl-none"
+    }`;
+
+    return (
+        <div className={`${baseClasses} ${isOutgoing ? "ml-auto" : ""}`}>
+            <div className={bubbleClasses}>
+                <div className="px-3 pt-2 pb-1">
+                    <small className="text-gray-300 text-xs">
+                        {message.sender.email}
+                    </small>
+                </div>
+                <div className="px-3 pb-3 break-words">
+                    {message.message}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Project = () => {
     const { user } = useContext(UserContext);
     const location = useLocation();
@@ -18,9 +43,46 @@ const Project = () => {
     const [allUsers, setAllUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [isOutgoing, setisOutgoing] = useState(false);
     const [message, setMessage] = useState("");
-    const messagebox = useRef();
+    const [messages, setMessages] = useState([]);
+    const messageBoxRef = useRef(null);
+
+    const scrollToBottom = () => {
+        if (messageBoxRef.current) {
+            messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const handleIncomingMessage = (data) => {
+        setMessages(prev => [...prev, {
+            ...data,
+            isOutgoing: false,
+            isAI: data.sender.isAI
+        }]);
+    };
+
+    const handleSend = () => {
+        if (!message.trim()) return;
+
+        const newMessage = {
+            message: message,
+            sender: user,
+            isOutgoing: true
+        };
+
+        sendmessage("project-message", {
+            message: message,
+            sender: user
+        });
+
+        setMessages(prev => [...prev, newMessage]);
+        setMessage("");
+    };
+
     const fetchAllUsers = async () => {
         try {
             setLoading(true);
@@ -33,92 +95,21 @@ const Project = () => {
         }
     };
 
-
-    const appendIncomingMessage = (data) => {
-        const messageBox = document.querySelector('.message_box');
-        const messageDiv = document.createElement('div');
-
-        messageDiv.className = 'flex flex-col w-fit max-w-[75%] ml-1';
-
-        messageDiv.innerHTML = `
-            <div class="rounded-2xl bg-gray-700 text-white rounded-tl-none">
-                <div class="px-3 pt-2 pb-1 ">
-                    <small class="text-gray-300 text-xs">${data.sender.email}</small>
-                </div>
-                <div class="px-3 pb-3 break-words">
-                    ${data.message}
-                </div>
-            </div>
-        `;
-
-        messageBox.appendChild(messageDiv);
-        // Scroll to bottom of message box
-        messageBox.scrollTop = messageBox.scrollHeight;
-    };
-    const appendOutgoingMessage = (messageText, email) => {
-        const messageBox = document.querySelector('.message_box');
-        const messageDiv = document.createElement('div');
-
-        messageDiv.className = 'flex flex-col w-fit max-w-[75%] ml-auto';
-
-        messageDiv.innerHTML = `
-            <div class="rounded-2xl bg-blue-600 text-white rounded-tr-none">
-                <div class="px-3 pt-2 pb-1">
-                    <small class="text-gray-300 text-xs">${email}</small>
-                </div>
-                <div class="px-3 pb-3 break-words">
-                    ${messageText}
-                </div>
-            </div>
-        `;
-
-        messageBox.appendChild(messageDiv);
-        // Scroll to bottom of message box
-        messageBox.scrollTop = messageBox.scrollHeight;
-    };
-
-
     const fetchprojectdata = async () => {
         const res = await axios.get(`/projects/get-project/${project._id}`);
-        // console.log("purna : ", res.data);
         setProject(res.data);
-    }
-    const send = () => {
-        sendmessage("project-message", {
-            message: message,
-            sender: user
-        })
-        appendOutgoingMessage(message, user.email);
-        setMessage("");
+    };
 
-    }
     useEffect(() => {
-        // Initialize the socket
         const socket = initializesocket(pro._id);
-
-        // Define the message handler
-        const handleMessage = (data) => {
-            console.log(data);
-            appendIncomingMessage(data);
-        };
-
-        // Set up the listener for "project-message"
-        socket.on("project-message", handleMessage);
-
-        // Fetch all users
+        socket.on("project-message", handleIncomingMessage);
         fetchAllUsers();
 
-        // Cleanup function
         return () => {
-            // Remove the specific listener for "project-message"
-            socket.off("project-message", handleMessage);
-
-            // Optionally disconnect the socket if no longer needed
+            socket.off("project-message", handleIncomingMessage);
             socket.disconnect();
         };
     }, []);
-
-
 
     const toggleUserSelection = (userId) => {
         setSelectedUsers(prev => {
@@ -131,34 +122,26 @@ const Project = () => {
     };
 
     const addUsersToProject = async () => {
-
         try {
             await axios.put('/projects/add-user', {
                 projectid: project._id,
                 users: selectedUsers,
             });
             fetchprojectdata();
-
             setIsAddUserOpen(false);
-
             setProject((prev) => {
-
                 const updatedUsers = new Set([...prev.users]);
                 selectedUsers.forEach((user) => updatedUsers.add(user));
-                const updatedproject = {
+                return {
                     ...prev,
                     users: Array.from(updatedUsers),
                 };
-                // console.log("updated project : ", updatedproject)
-                return updatedproject;
             });
-
             setSelectedUsers([]);
         } catch (error) {
             console.error('Error adding users:', error.response?.data || error.message);
         }
     };
-
 
     const openUserModal = (user) => {
         setSelectedUser(user);
@@ -171,8 +154,6 @@ const Project = () => {
                 setSelectedUser={setSelectedUser}
                 project={project}
             />
-
-
 
             {isAddUserOpen && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
@@ -209,13 +190,13 @@ const Project = () => {
                                                     className={`w-10 h-10 rounded-full object-cover transition-all duration-300 ${selectedUsers.includes(user._id)
                                                         ? 'ring-2 ring-blue-500 scale-110'
                                                         : ''
-                                                        }`}
+                                                    }`}
                                                 />
                                             ) : (
                                                 <div className={`w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center transition-all duration-300 ${selectedUsers.includes(user._id)
                                                     ? 'ring-2 ring-blue-500 scale-110 bg-blue-600'
                                                     : ''
-                                                    }`}>
+                                                }`}>
                                                     <span className="text-zinc-300 text-lg uppercase">
                                                         {user.email[0]}
                                                     </span>
@@ -224,7 +205,7 @@ const Project = () => {
                                             <p className={`text-white transition-all duration-300 ${selectedUsers.includes(user._id)
                                                 ? 'font-medium scale-105'
                                                 : ''
-                                                }`}>{user.email}</p>
+                                            }`}>{user.email}</p>
                                         </div>
                                     </div>
                                 ))
@@ -264,7 +245,6 @@ const Project = () => {
                     </button>
                 </div>
                 <div className="p-4 space-y-4">
-
                     {project?.users?.map((user) => (
                         <div
                             key={user._id}
@@ -281,8 +261,6 @@ const Project = () => {
                                 ) : (
                                     <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center">
                                         <span className="text-zinc-300 text-lg uppercase">
-
-                                            {/* {console.log("User fisrt letter:", (user?.email)[0])} */}
                                             {user?.email?.[0]?.toUpperCase() || "?"}
                                         </span>
                                     </div>
@@ -317,24 +295,17 @@ const Project = () => {
                 </div>
 
                 <div
-                    ref={messagebox}
-                    className="flex-1 flex-col message_box overflow-y-auto text-white pt-2 gap-y-1 scrollbar-hide">
-                    {/* <div className={`flex flex-col w-fit max-w-[75%] ${isOutgoing ? 'ml-auto' : ''}`}>
-                        <div className={`
-                        rounded-2xl
-                        ${isOutgoing ?
-                                'bg-blue-600 text-white rounded-tr-none' :
-                                'bg-gray-700 text-white rounded-tl-none'
-                            }
-                         `}>
-                            <div className="px-3 pt-2 pb-1">
-                                <small className="text-gray-300 text-xs">revanth@gmail.com</small>
-                            </div>
-                            <div className="px-3 pb-3 break-words">
-                                the message thats gonne be sent to the person
-                            </div>
-                        </div>
-                    </div> */}
+                    ref={messageBoxRef}
+                    className="flex-1 flex flex-col message_box overflow-y-auto text-white pt-2 gap-y-1 scrollbar-hide p-4"
+                >
+                    {messages.map((msg, index) => (
+                        <MessageBubble
+                            key={index}
+                            message={msg}
+                            isOutgoing={msg.isOutgoing}
+                            isAI={msg.sender.isAI}
+                        />
+                    ))}
                 </div>
 
                 <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">
@@ -342,14 +313,16 @@ const Project = () => {
                         <input
                             name='message'
                             value={message}
-                            onChange={(e) => { setMessage(e.target.value) }}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                             type="text"
                             placeholder="Type a message..."
                             className="flex-1 bg-zinc-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 font-serif"
                         />
                         <button
-                            onClick={send}
-                            className="bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700 flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/20 h-10 w-10">
+                            onClick={handleSend}
+                            className="bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700 flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/20 h-10 w-10"
+                        >
                             <IoSend className="w-5 h-5" />
                         </button>
                     </div>
@@ -358,7 +331,7 @@ const Project = () => {
 
             <div className="w-[70%] h-full bg-gradient-to-br from-zinc-800 to-zinc-900">
             </div>
-        </div >
+        </div>
     );
 };
 
