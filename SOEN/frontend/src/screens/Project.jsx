@@ -7,24 +7,25 @@ import axios from '../config/axios.js';
 import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
 import { UserContext } from "../context/Usercontext.jsx";
-
+import Markdown from 'markdown-to-jsx'
 const MessageBubble = ({ message, isOutgoing, isAI }) => {
+    // console.log("is Ai : ", isAI);
     const baseClasses = "flex flex-col w-fit max-w-[75%] mt-1";
-    const bubbleClasses = `rounded-2xl ${
-        isAI ? "bg-purple-100 text-white rounded-tl-none" :
-        isOutgoing ? "bg-blue-600 text-white rounded-tr-none" :
-        "bg-gray-700 text-white rounded-tl-none"
-    }`;
+    const bubbleClasses = `rounded-2xl ${isAI ? "bg-purple-900/40 text-white rounded-tl-none" : (
+        isOutgoing ? "bg-blue-600/30 text-white rounded-tr-none" :
+            "bg-gray-700 text-white rounded-tl-none")
+        }`;
 
     return (
         <div className={`${baseClasses} ${isOutgoing ? "ml-auto" : ""}`}>
             <div className={bubbleClasses}>
                 <div className="px-3 pt-2 pb-1">
-                    <small className="text-gray-300 text-xs">
-                        {message.sender.email}
+                    <small className="text-gray-300/60 text-xs">
+                        {message?.sender?.email}
                     </small>
                 </div>
                 <div className="px-3 pb-3 break-words">
+
                     {message.message}
                 </div>
             </div>
@@ -45,6 +46,16 @@ const Project = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const [filetree, setFiletree] = useState({
+        "app.js": {
+            content: `const express = require(express);`
+        },
+        "package.json": {
+            content: {
+                "name": "temp-server"
+            }
+        }
+    });
     const messageBoxRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -58,11 +69,27 @@ const Project = () => {
     }, [messages]);
 
     const handleIncomingMessage = (data) => {
-        setMessages(prev => [...prev, {
-            ...data,
-            isOutgoing: false,
-            isAI: data.sender.isAI
-        }]);
+        const yon = data.sender._id === 'ai' ? true : false;
+        if (yon) {
+            const messageobj = JSON.parse(data.message);
+            setMessages((prev) => {
+                return [...prev, {
+                    ...data,
+                    message: <Markdown children={messageobj.text} />
+                }]
+            })
+
+        }
+        else {
+            setMessages(prev => [...prev, {
+                ...data,
+                isOutgoing: false,
+                isAI: yon
+            }]);
+
+        }
+
+        // console.log("Last message: ", messages[messages.length - 1]);
     };
 
     const handleSend = () => {
@@ -190,13 +217,13 @@ const Project = () => {
                                                     className={`w-10 h-10 rounded-full object-cover transition-all duration-300 ${selectedUsers.includes(user._id)
                                                         ? 'ring-2 ring-blue-500 scale-110'
                                                         : ''
-                                                    }`}
+                                                        }`}
                                                 />
                                             ) : (
                                                 <div className={`w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center transition-all duration-300 ${selectedUsers.includes(user._id)
                                                     ? 'ring-2 ring-blue-500 scale-110 bg-blue-600'
                                                     : ''
-                                                }`}>
+                                                    }`}>
                                                     <span className="text-zinc-300 text-lg uppercase">
                                                         {user.email[0]}
                                                     </span>
@@ -205,7 +232,7 @@ const Project = () => {
                                             <p className={`text-white transition-all duration-300 ${selectedUsers.includes(user._id)
                                                 ? 'font-medium scale-105'
                                                 : ''
-                                            }`}>{user.email}</p>
+                                                }`}>{user.email}</p>
                                         </div>
                                     </div>
                                 ))
@@ -275,8 +302,8 @@ const Project = () => {
                 </div>
             </div>
 
-            <div className="w-[30%] h-full bg-zinc-900 flex flex-col">
-                <div className="p-4 bg-zinc-800 flex justify-between">
+            <div className="w-[30%] h-full bg-gray-800 flex flex-col">
+                <div className="p-4 bg-gray-800 flex justify-between">
                     <h2 className="text-white text-xl font-serif">{project?.name || 'Messages'}</h2>
                     <div className="flex gap-3">
                         <button
@@ -296,19 +323,19 @@ const Project = () => {
 
                 <div
                     ref={messageBoxRef}
-                    className="flex-1 flex flex-col message_box overflow-y-auto text-white pt-2 gap-y-1 scrollbar-hide p-4"
+                    className="flex-1 bg-gray-700/30 rounded-lg ml-3 flex flex-col message_box overflow-y-auto text-white pt-2 gap-y-1 scrollbar-hide p-4 ml-1 "
                 >
                     {messages.map((msg, index) => (
                         <MessageBubble
                             key={index}
                             message={msg}
-                            isOutgoing={msg.isOutgoing}
-                            isAI={msg.sender.isAI}
+                            isOutgoing={msg?.isOutgoing}
+                            isAI={msg?.sender?._id === 'ai'}
                         />
                     ))}
                 </div>
 
-                <div className="p-4 bg-zinc-800/50 backdrop-blur-sm">
+                <div className="p-4 bg-gray-800/50 backdrop-blur-sm">
                     <div className="flex items-center gap-2">
                         <input
                             name='message'
@@ -329,8 +356,12 @@ const Project = () => {
                 </div>
             </div>
 
-            <div className="w-[70%] h-full bg-gradient-to-br from-zinc-800 to-zinc-900">
+            <div className="w-[70%] h-full flex  flex-grow bg-gradient-to-br from-gray-900 to-gray-800">
+                <div className="w-[100%] file_shower bg-gray-800 h-full p-4">
+                <div className="filenames h-full w-[20%] bg-gray-700/30 rounded-lg"></div>
+                </div>
             </div>
+
         </div>
     );
 };
