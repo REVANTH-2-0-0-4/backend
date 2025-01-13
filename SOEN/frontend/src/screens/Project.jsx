@@ -8,7 +8,7 @@ import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
 import { UserContext } from "../context/Usercontext.jsx";
 import Markdown from 'markdown-to-jsx'
-import {get_web_container} from "../config/webcontainer.js"
+import { get_web_container } from "../config/webcontainer.js"
 const MessageBubble = ({ message, isOutgoing, isAI }) => {
     const baseClasses = "flex flex-col w-fit max-w-[75%] mt-1";
     const bubbleClasses = `rounded-2xl ${isAI
@@ -62,7 +62,34 @@ const Project = () => {
         },
     });
     const [currentFile, setCurrentFile] = useState();
+    const [iframeurl, setIframeurl] = useState(null);
+    const [runprocess, setRunprocess] = useState(null);
     const messageBoxRef = useRef(null);
+    const webcontainerprocess = async () => {
+
+        await webcontainer?.mount(fileTree);
+
+        const install_process = await webcontainer?.spawn("npm", ["install"]);
+        install_process.output.pipeTo(new WritableStream({
+            write(chunk) {
+                console.log(chunk);
+            }
+        }))
+        if(runprocess){
+            runprocess.kill();
+        }
+        let temprunprocess = await webcontainer?.spawn("npm", ["start"]);
+        temprunprocess.output.pipeTo(new WritableStream({
+            write(chunk) {
+                console.log(chunk);
+            }
+        }))
+        setRunprocess(temprunprocess);
+        webcontainer.on("server-ready", (port, url) => {
+            console.log("server ready at port : ", port, "and url : ", url);
+            setIframeurl(url);
+        });
+    }
 
     const scrollToBottom = () => {
         if (messageBoxRef.current) {
@@ -101,14 +128,14 @@ const Project = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleIncomingMessage = (data) => {
+    const handleIncomingMessage = async (data) => {
         // console.log("data : ",data.message.fileTree);
         try {
             const isAIMessage = data.sender?._id === 'ai';
             const messageObj = JSON.parse(data.message);
             console.log("message obj", messageObj.fileTree);
             setFileTree(messageObj.fileTree);
-            webcontainer.mount(messageObj.fileTree);
+            await webcontainer?.mount(messageObj.fileTree);
             console.log(" file tree after update : ", fileTree);
 
             if (isAIMessage) {
@@ -190,11 +217,11 @@ const Project = () => {
 
     useEffect(() => {
         if (!project?._id) return;
-        
+
         // Check if WebContainer is already running in another tab/window
         if (!webcontainer && !window.__WC_LOADING) {
             window.__WC_LOADING = true; // Set a flag to prevent parallel boots
-            
+
             get_web_container()
                 .then(container => {
                     window.__WC_LOADING = false;
@@ -206,17 +233,16 @@ const Project = () => {
                 .catch(error => {
                     window.__WC_LOADING = false;
                     console.error("Failed to boot WebContainer:", error);
-                    // Optionally show user-friendly error message
                     alert("Another WebContainer instance is already running. Please close other tabs/windows using WebContainer.");
                 });
         }
-    
+
         const socket = initializesocket(project._id);
         socket.on("project-message", handleIncomingMessage);
-    
+
         fetchAllUsers();
         fetchProjectData();
-    
+
         return () => {
             socket.off("project-message", handleIncomingMessage);
             socket.disconnect();
@@ -470,7 +496,7 @@ const Project = () => {
                         ))}
                     </div>
 
-                    <div className="content_shower w-[80%] bg-gray-800 rounded-lg ml-1 text-white h-full">
+                    <div className={`content_shower ${iframeurl && webcontainer ? 'w-[60%]' : 'w-[80%]'} bg-gray-800 rounded-lg ml-1 text-white h-full`}>
                         <div className="top bg-gray-700/30 text-white p-2 px-4 h-[7%] rounded-lg mb-1 flex items-center">
                             <div className="flex-1 flex items-center space-x-2">
                                 {openFiles.map((file, index) => (
@@ -480,26 +506,28 @@ const Project = () => {
                                     >
                                         <FileText size={14} />
                                         <span>{file}</span>
-                                        <button
-                                            onClick={() => del_file(file)}>
+                                        <button onClick={() => del_file(file)}>
                                             <X
                                                 size={14}
                                                 className="hover:text-red-400 cursor-pointer"
-
                                             />
                                         </button>
-
                                     </div>
                                 ))}
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Users size={16} />
+                                <button
+                                    className="bg-gray-600/50 px-2 py-1 rounded text-sm"
+                                    onClick={webcontainerprocess}
+                                >run process</button>
                             </div>
                         </div>
 
                         <div className="bottom text-white p-2 px-4 h-[92.5%] bg-gray-700/30 rounded-lg overflow-auto scrollbar-hide">
                             <pre>
-                                <code contentEditable suppressContentEditableWarning
+                                <code
+                                    contentEditable
+                                    suppressContentEditableWarning
                                     onBlur={handleBlur}
                                 >
                                     {currentFile && (
@@ -507,10 +535,26 @@ const Project = () => {
                                     )}
                                 </code>
                             </pre>
-
-
                         </div>
                     </div>
+
+                    {iframeurl && webcontainer && (
+                        <div className="preview-container w-[20%] ml-1 flex flex-col bg-gray-700/30 rounded-lg">
+                            <div className="preview-url p-2 bg-gray-600/50 rounded-t-lg">
+                                <input
+                                    type="text"
+                                    value={iframeurl}
+                                    onChange={(e) => {
+                                        setIframeurl(e.target.value);
+                                    }}
+                                    className="w-full px-2 py-1 text-sm bg-gray-700 text-white rounded border border-gray-600"
+                                />
+                            </div>
+                            <div className="preview-frame flex-grow text-white">
+                                <iframe src={iframeurl} className="w-full h-full rounded-b-lg " />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
