@@ -18,5 +18,5 @@ export const recievemessage = (eventname, cb) => {
 }
 
 export const sendmessage = (eventname, data) => {
-        socketinstance.emit(eventname,data);
+        socketinstance?.emit(eventname,data);
 }

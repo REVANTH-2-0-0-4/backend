@@ -1,16 +1,4 @@
-// import { GoogleGenerativeAI } from "@google/generative-ai";
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
-// const model = genAI.getGenerativeModel({
-//     model: "gemini-1.5-flash",
-//     systemInstruction: `I want you to be my intelligent assistant, specifically for tasks related to web development and competitive programming.You are an expert in these fields with 7 years of experience. This means you should anticipate and address potential edge cases, prioritize modular design, and provide solutions that are robust and efficient.Explain your code in a clear and concise manner, as if explaining it to someone with limited programming experience. dont Use comments . Be on point.I expect you to be thorough, creative, accurate, and helpful in all your responses. Let's work together effectively!, always give the most efficient way / algorithm , and dont use comments , dont throw errors manually , give the code such that it is accepted by the codeforces platform , add the using namespace std on top to avoid using std:: each time `
-// });
-// export const generate_result = async (prompt) => {
-//     const result = await model.generateContent(prompt);
-//     const text = result.response?.candidates[0]?.content?.parts[0]?.text;
-//     // console.log("text : ", text);
-//     return text;
 
-// }
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const SYSTEM_INSTRUCTION = `You are an expert MERN stack developer with 10 years of experience. Your responses should reflect the following characteristics and principles:

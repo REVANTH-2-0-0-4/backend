@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { IoSend } from "react-icons/io5";
 import { Users, X, FileText } from 'lucide-react';
@@ -8,6 +8,7 @@ import Selectedusermodal from '../modals/Selectedusermodal.jsx';
 import { initializesocket, sendmessage, recievemessage } from '../config/socket.js';
 import { UserContext } from "../context/Usercontext.jsx";
 import Markdown from 'markdown-to-jsx'
+import {get_web_container} from "../config/webcontainer.js"
 const MessageBubble = ({ message, isOutgoing, isAI }) => {
     const baseClasses = "flex flex-col w-fit max-w-[75%] mt-1";
     const bubbleClasses = `rounded-2xl ${isAI
@@ -47,6 +48,7 @@ const Project = () => {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const [openFiles, setOpenFIles] = useState([])
+    const [webcontainer, setWebcontainer] = useState();
     const [fileTree, setFileTree] = useState({
         "app.js": {
             file: {
@@ -91,7 +93,7 @@ const Project = () => {
                 setCurrentFile(openFiles[nextFileIdx]);
             } else {
 
-                setCurrentFile(null);
+                setCurrentFile();
             }
         }
     };
@@ -106,6 +108,7 @@ const Project = () => {
             const messageObj = JSON.parse(data.message);
             console.log("message obj", messageObj.fileTree);
             setFileTree(messageObj.fileTree);
+            webcontainer.mount(messageObj.fileTree);
             console.log(" file tree after update : ", fileTree);
 
             if (isAIMessage) {
@@ -187,18 +190,38 @@ const Project = () => {
 
     useEffect(() => {
         if (!project?._id) return;
-
+        
+        // Check if WebContainer is already running in another tab/window
+        if (!webcontainer && !window.__WC_LOADING) {
+            window.__WC_LOADING = true; // Set a flag to prevent parallel boots
+            
+            get_web_container()
+                .then(container => {
+                    window.__WC_LOADING = false;
+                    if (!webcontainer) {
+                        setWebcontainer(container);
+                        console.log("web container booted");
+                    }
+                })
+                .catch(error => {
+                    window.__WC_LOADING = false;
+                    console.error("Failed to boot WebContainer:", error);
+                    // Optionally show user-friendly error message
+                    alert("Another WebContainer instance is already running. Please close other tabs/windows using WebContainer.");
+                });
+        }
+    
         const socket = initializesocket(project._id);
         socket.on("project-message", handleIncomingMessage);
-
+    
         fetchAllUsers();
         fetchProjectData();
-
+    
         return () => {
             socket.off("project-message", handleIncomingMessage);
             socket.disconnect();
         };
-    }, [project?._id]);
+    }, []);
 
     const toggleUserSelection = (userId) => {
         setSelectedUsers(prev =>
@@ -228,6 +251,22 @@ const Project = () => {
     const openUserModal = (user) => {
         setSelectedUser(user);
     };
+    const handleBlur = useCallback((e) => {
+        const updatedContent = e.target.innerText;
+
+        // Only update if content actually changed
+        if (fileTree[currentFile]?.file.contents !== updatedContent) {
+            const ft = {
+                ...fileTree,
+                [currentFile]: {
+                    file: {
+                        contents: updatedContent
+                    }
+                }
+            };
+            setFileTree(ft);
+        }
+    }, [currentFile, fileTree]);
 
     return (
         <div className="w-full h-screen flex font-serif relative">
@@ -396,7 +435,12 @@ const Project = () => {
                             name='message'
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
                             type="text"
                             placeholder="Type a message..."
                             className="flex-1 bg-zinc-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 font-serif"
@@ -455,13 +499,15 @@ const Project = () => {
 
                         <div className="bottom text-white p-2 px-4 h-[92.5%] bg-gray-700/30 rounded-lg overflow-auto scrollbar-hide">
                             <pre>
-                                <code className="contentEditable">
+                                <code contentEditable suppressContentEditableWarning
+                                    onBlur={handleBlur}
+                                >
                                     {currentFile && (
                                         fileTree[`${currentFile}`]?.file?.contents
                                     )}
                                 </code>
                             </pre>
-                            {/* {console.log("current file : ", currentFile)} */}
+
 
                         </div>
                     </div>

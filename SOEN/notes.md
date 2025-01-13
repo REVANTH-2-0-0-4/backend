@@ -134,4 +134,8 @@
 - Provides high-performance and scalable token invalidation using Redis.  
 - Simplifies token handling across platforms, ensuring consistent user experience and security.  
 
+###
+- each tab has its own window object and its own dom tree , 
+- tabs of same origin uses same global variables , and share same  window object 
+
 ---
