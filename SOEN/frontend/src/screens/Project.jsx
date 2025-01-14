@@ -221,6 +221,7 @@ const Project = () => {
         // Check if WebContainer is already running in another tab/window
         if (!webcontainer && !window.__WC_LOADING) {
             window.__WC_LOADING = true; // Set a flag to prevent parallel boots
+            //websites  with same domain names  , shares same global variables ? 
 
             get_web_container()
                 .then(container => {
@@ -551,7 +552,7 @@ const Project = () => {
                                 />
                             </div>
                             <div className="preview-frame flex-grow text-white">
-                                <iframe src={iframeurl} className="w-full h-full rounded-b-lg " />
+                                <iframe src={iframeurl} className="text-white w-full h-full rounded-b-lg " />
                             </div>
                         </div>
                     )}
